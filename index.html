@@ -198,33 +198,43 @@
             max-height: 100vh !important;
             z-index: 9999999 !important;
             border-radius: 0 !important;
-            padding: 90px 40px 40px 40px !important;
+            padding: 110px 20px 30px 20px !important; /* مساحة واسعة بالاعلى لأجل الكبسات */
             box-sizing: border-box !important;
             font-size: 30px !important;
         }
 
-        /* جعل نص الآيات عند التكبير يمرر النقرات للأزرار تحته ولا يعيق الضغط */
         .quran-box.fullscreen-quran #quranTextContent {
             position: relative;
             z-index: 1;
         }
         
-        /* إظهار الشريط بقلب الشاشة المكبرة وثبته بأعلى الشاشة بأولوية قصوى ونقرات مفعلة */
+        /* الشريط العلوي الشفاف بالكامل بدون خلفية سوداء (فقط كبسات منفصلة وواضحة) */
         .quran-box.fullscreen-quran .fullscreen-top-bar {
             display: flex !important;
             position: fixed;
             top: 10px; left: 10px; right: 10px;
-            background: #111e2b;
-            color: white;
-            padding: 12px 20px;
+            background: transparent !important; /* بدون أي خلفية */
+            border: none !important;
+            box-shadow: none !important;
+            padding: 5px;
             justify-content: space-between;
             align-items: center;
             z-index: 10000000 !important;
-            border-radius: 10px;
             box-sizing: border-box;
-            font-size: 15px;
-            border: 2px solid #16a085;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        /* تنسيق أزرار شاشة التكبير لتكون بارزة ومريحة للعين */
+        .fs-action-btn {
+            border: none;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
 
         .sunnah-grid {
@@ -376,15 +386,15 @@
                     جاري تحميل بيانات الصفحة...
                 </div>
                 
-                <!-- صندوق عرض الآيات (مضمن بداخله شريط الأزرار عند التكبير) -->
+                <!-- صندوق عرض الآيات (مضمن بداخله شريط الأزرار الشفاف عند التكبير) -->
                 <div id="quranDisplay" class="quran-box">
-                    <!-- شريط التحكم الداخلي الذي يظهر حصرياً بقلب الشاشة عند التكبير -->
+                    <!-- شريط التحكم الشفاف (أزرار فقط بدون خلفية سوداء) -->
                     <div class="fullscreen-top-bar" id="fullscreenTopBar">
-                        <button class="btn" style="background-color: #e74c3c; width: auto; padding: 8px 15px; font-size: 13px; margin:0;" onclick="toggleQuranFullscreen()">تصغير الشاشة ❌</button>
-                        <span id="fsBarInfo" style="font-size: 14px; font-weight: bold; color: #f1c40f;">الصفحة: 1</span>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn" style="background-color: #34495e; width: auto; padding: 8px 12px; font-size: 13px; margin:0;" onclick="prevPage()">➡️ الصفحة السابقة</button>
-                            <button class="btn" style="background-color: #16a085; width: auto; padding: 8px 12px; font-size: 13px; margin:0;" onclick="nextPage()">الصفحة التالية ⬅️</button>
+                        <button class="fs-action-btn" style="background-color: #e74c3c;" onclick="toggleQuranFullscreen()">❌ تصغير</button>
+                        <span id="fsBarInfo" style="font-size: 13px; font-weight: bold; background: rgba(255,255,255,0.85); padding: 5px 10px; border-radius: 6px; color: #2c3e50;">الصفحة: 1</span>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="fs-action-btn" style="background-color: #34495e;" onclick="prevPage()">➡️ السابق</button>
+                            <button class="fs-action-btn" style="background-color: #16a085;" onclick="nextPage()">التالي ⬅️</button>
                         </div>
                     </div>
                     
@@ -542,7 +552,6 @@
             alert(`تم تحديث الموقع بنجاح إلى (${city}، ${country}) وتفعيل الإشعارات.`);
         }
 
-        // طلب إذن إرسال الإشعارات من المتصفح
         function requestNotificationPermission() {
             if (!("Notification" in window)) return;
             if (Notification.permission !== "granted") {
@@ -554,7 +563,6 @@
             }
         }
 
-        // إرسال إشعار نظام حقيقي
         function showSystemNotification(title, bodyText) {
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification(title, {
@@ -585,7 +593,6 @@
                 alertBox.style.display = 'block';
                 noPrayerState.style.display = 'none';
 
-                // إرسال إشعار نظام إذا لم يتم إرساله مسبقاً لهذه الصلاة
                 if (lastNotifiedPrayer !== activePrayerName) {
                     lastNotifiedPrayer = activePrayerName;
                     showSystemNotification("حان الآن وقت الصلاة", `حي على الصلاة، حان وقت ${activePrayerName} في ${userCity || 'منطقتك'}`);
@@ -686,7 +693,7 @@
                 let currentJuz = ayahs.length > 0 ? ayahs[0].juz : "";
 
                 document.getElementById('quranInfoBar').innerHTML = `سورة: <b>${surahsInPage}</b> | الجزء: <b>${currentJuz}</b> | الصفحة: <b>${pageNum}</b>`;
-                document.getElementById('fsBarInfo').innerHTML = `الصفحة: ${pageNum} (جزء ${currentJuz})`;
+                document.getElementById('fsBarInfo').innerHTML = `صفحة ${pageNum} (جزء ${currentJuz})`;
 
                 let htmlText = "";
                 
