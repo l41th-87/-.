@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق صلاتي والمصحف الشريف - النسخة النهائية المكتملة</title>
+    <!-- استدعاء خط المصحف العثماني الأصيل -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eaf2f8;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #16a085;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .nav-bar {
+            display: flex;
+            background-color: #1abc9c;
+            justify-content: space-around;
+            padding: 8px 0;
+            overflow-x: auto;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+        .nav-btn.active {
+            background-color: #16a085;
+        }
+        .container {
+            max-width: 580px;
+            margin: 15px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        .page {
+            display: none;
+        }
+        .page.active-page {
+            display: block;
+        }
+        /* نافذة إدخال الموقع الأولية الإجبارية عند فتح التطبيق لأول مرة */
+        #welcomeModal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999999;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 85%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .score-display {
+            background: #f1c40f;
+            color: #2c3e50;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        input[type="text"], select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #bdc3c7;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background-color: #16a085;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .section-divider {
+            border: none;
+            height: 2px;
+            background-color: #ecf0f1;
+            margin: 20px 0;
+        }
+        .dhikr-card {
+            background: #f8f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            border-right: 4px solid #16a085;
+            line-height: 2.2;
+            text-align: justify;
+        }
+        .quran-info-bar {
+            background: #2c3e50;
+            color: #f1c40f;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .surah-banner {
+            text-align: center;
+            border: 2px solid #27ae60;
+            background: #e8f8f5;
+            padding: 8px;
+            margin: 20px 0 10px 0;
+            border-radius: 8px;
+            font-family: 'Amiri', serif;
+            font-size: 20px;
+            color: #16a085;
+            font-weight: bold;
+        }
+        .basmalah {
+            text-align: center;
+            font-family: 'Amiri', serif;
+            font-size: 22px;
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        /* صندوق عرض الآيات (الوضع العادي) */
+        .quran-box {
+            background: #fef9e7;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #f9e79f;
+            font-family: 'Amiri', serif;
+            font-size: 24px;
+            text-align: justify;
+            direction: rtl;
+            line-height: 3.2;
+            color: #111;
+            margin-top: 5px;
+            min-height: 380px;
+            max-height: 60vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        /* شريط التحكم الداخلي (مخفي بالحالة العادية، وبيظهر فوق الآيات أول ما يتكبر المصحف) */
+        .fullscreen-top-bar {
+            display: none;
+        }
+
+
+        /* وضع تكبير الشاشة الفعلي بالكامل */
+        .quran-box.fullscreen-quran {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            z-index: 9999999 !important;
+            border-radius: 0 !important;
+            padding: 90px 40px 40px 40px !important;
+            box-sizing: border-box !important;
+            font-size: 30px !important;
+        }
+        
+        /* إظهار الشريط بقلب الشاشة المكبرة وثبته بأعلى الشاشة بشكل ممتاز */
+        .quran-box.fullscreen-quran .fullscreen-top-bar {
+            display: flex !important;
+            position: fixed;
+            top: 10px; left: 10px; right: 10px;
+            background: #111e2b;
+            color: white;
+            padding: 12px 20px;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10000000 !important;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+            border: 2px solid #16a085;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+        }
+
+
+        .sunnah-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .sunnah-btn {
+            background: #e8f8f5;
+            border: 1px solid #16a085;
+            color: #16a085;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+        }
+        .sunnah-btn:hover {
+            background: #16a085;
+            color: white;
+        }
+        .page-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .mode-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            margin-bottom: 10px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #16a085;
+            background: white;
+            color: #16a085;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            text-align: center;
+        }
+        .mode-btn.active {
+            background: #16a085;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+
+    <!-- نافذة إدخال الموقع الأولية الإجبارية عند فتح التطبيق لأول مرة -->
+    <div id="welcomeModal" style="display: none;">
+        <div class="modal-content">
+            <h3>أهلاً بك في تطبيق صلاتي</h3>
+            <p style="font-size: 13px; color: #666;">الرجاء تحديد منطقتك لضبط مواقيت الصلاة وتفعيل إشعارات الأذان:</p>
+            <input type="text" id="initCity" value="القدس" placeholder="مثال: القدس أو جنين">
+            <input type="text" id="initCountry" value="فلسطين" placeholder="مثال: فلسطين">
+            <button class="btn" onclick="saveInitialLocation()">حفظ الموقع وبدء التطبيق</button>
+        </div>
+    </div>
+
+
+    <header>تطبيق صلاتي والمصحف الشريف</header>
+
+
+    <!-- شريط التنقل بين أقسام التطبيق -->
+    <div class="nav-bar">
+        <button class="nav-btn active" id="tabHome" onclick="switchPage('home')">الرئيسية</button>
+        <button class="nav-btn" id="tabLocation" onclick="switchPage('location')">الموقع</button>
+        <button class="nav-btn" id="tabQuran" onclick="switchPage('quran')">القرآن والسُنن</button>
+        <button class="nav-btn" id="tabDhikr" onclick="switchPage('dhikr')">الأذكار</button>
+        <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي</button>
+    </div>
+
+
+    <div class="container" id="mainContainer">
+        
+        <!-- لوحة النقاط والموقع -->
+        <div class="score-display">
+            رصيدك: <span id="scoreValue">100</span> | الموقع: <span id="currentLocDisplay">غير محدد</span>
+        </div>
+
+
+        <!-- 1. الصفحة الرئيسية -->
+        <div id="pageHome" class="page active-page">
+            <div style="background: #fff5f5; padding: 15px; border-radius: 10px; border: 2px dashed #e74c3c;">
+                <h3>تنبيه الصلاة (محاكاة الأذان والإشعارات)</h3>
+                <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">أجب بصراحة، فانت لا تغش الناس بل تغش الله عز وجل ولا تخادع إلا نفسك:</p>
+                
+                <button class="btn" style="background-color: #27ae60; margin-bottom: 8px;" onclick="handlePrayerChoice('prayed')">واللّٰه أنني صليت (+10 نقاط)</button>
+                <button class="btn" style="background-color: #c0392b; margin-bottom: 8px;" onclick="handlePrayerChoice('lazy')">لم أصلي (بسبب الكسل أو اللعب) (-20 نقطة)</button>
+                <button class="btn" style="background-color: #2980b9;" onclick="handlePrayerChoice('excuse')">لم أصلي لعذر شرعي (بدون خصم نقاط)</button>
+            </div>
+        </div>
+
+
+        <!-- 2. صفحة الموقع الجغرافي والإشعارات -->
+        <div id="pageLocation" class="page">
+            <div>
+                <h3>إعدادات الموقع الجغرافي والإشعارات</h3>
+                <label style="font-size: 13px; color: #555;">اسم المدينة:</label>
+                <input type="text" id="updateCity" placeholder="مثال: القدس أو جنين">
+                
+                <label style="font-size: 13px; color: #555;">اسم الدولة:</label>
+                <input type="text" id="updateCountry" placeholder="مثال: فلسطين">
+                
+                <button class="btn" style="background-color: #2980b9;" onclick="updateLocation()">تحديث الموقع وتفعيل الإشعارات</button>
+            </div>
+        </div>
+
+
+        <!-- 3. صفحة القرآن الكريم والسُنن والبحث -->
+        <div id="pageQuran" class="page">
+            <div>
+                <h3>سور السُنن والفضل</h3>
+                <div class="sunnah-grid">
+                    <button class="sunnah-btn" onclick="loadPage(293)">سورة الكهف</button>
+                    <button class="sunnah-btn" onclick="loadPage(562)">سورة الملك</button>
+                    <button class="sunnah-btn" onclick="loadPage(440)">سورة يس</button>
+                    <button class="sunnah-btn" onclick="loadPage(534)">سورة الواقعة</button>
+                </div>
+
+
+                <hr class="section-divider">
+
+
+                <h3>البحث السريع واختيار السور</h3>
+                <input type="text" id="surahSearchInput" placeholder="اكتب اسم السورة (مثل: المائدة، البقرة...)" oninput="filterSurahsList()">
+                
+                <select id="surahDropdownSelect" onchange="onSurahDropdownChange()" style="margin-top: 5px;">
+                    <option value="">-- اختر السورة مباشرة من القائمة --</option>
+                </select>
+
+
+                <h3 style="margin-top: 15px;">تصفح المصحف الشريف (من 1 إلى 604)</h3>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="pageNumberInput" min="1" max="604" value="1" placeholder="رقم الصفحة">
+                    <button class="btn" style="width: 120px; margin-top: 5px;" onclick="loadPageByNumberInput()">انتقال للصفحة</button>
+                </div>
+
+
+                <!-- أزرار التحكم بالقراءة وتكبير المصحف -->
+                <div style="display: flex; gap: 5px; margin-top: 10px;">
+                    <button class="btn" id="fullscreenQuranBtn" style="background-color: #8e44ad; font-size: 12px; padding: 6px;" onclick="toggleQuranFullscreen()">تكبير المصحف للشاشة</button>
+                    <button class="btn" style="background-color: #2980b9; font-size: 12px; padding: 6px;" onclick="saveBookmark()">حفظ مكاني</button>
+                    <button class="btn" style="background-color: #e67e22; font-size: 12px; padding: 6px;" onclick="goToBookmark()">العودة للمحفوظ</button>
+                </div>
+
+
+                <!-- الشريط العلوي المصحفي الذي يوضح الصفحة والجزء والسورة -->
+                <div class="quran-info-bar" id="quranInfoBar" style="margin-top: 12px;">
+                    جاري تحميل بيانات الصفحة...
+                </div>
+                
+                <!-- صندوق عرض الآيات (مضمن بداخله شريط الأزرار عند التكبير) -->
+                <div id="quranDisplay" class="quran-box">
+                    <!-- شريط التحكم الداخلي الذي يظهر حصرياً بقلب الشاشة عند التكبير -->
+                    <div class="fullscreen-top-bar" id="fullscreenTopBar">
+                        <button class="btn" style="background-color: #e74c3c; width: auto; padding: 8px 15px; font-size: 13px; margin:0;" onclick="toggleQuranFullscreen()">تصغير الشاشة ❌</button>
+                        <span id="fsBarInfo" style="font-size: 14px; font-weight: bold; color: #f1c40f;">الصفحة: 1</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" style="background-color: #34495e; width: auto; padding: 8px 12px; font-size: 13px; margin:0;" onclick="prevPage()">➡️ الصفحة السابقة</button>
+                            <button class="btn" style="background-color: #16a085; width: auto; padding: 8px 12px; font-size: 13px; margin:0;" onclick="nextPage()">الصفحة التالية ⬅️</button>
+                        </div>
+                    </div>
+                    
+                    <div id="quranTextContent">جاري تحميل الصفحة بالخط العثماني الأصيل...</div>
+                </div>
+
+
+                <!-- أزرار تقليب الصفحات العادية -->
+                <div class="page-controls">
+                    <button class="btn" style="background-color: #34495e;" onclick="prevPage()">الصفحة السابقة</button>
+                    <button class="btn" style="background-color: #16a085;" onclick="nextPage()">الصفحة التالية</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 4. صفحة الأذكار الكاملة -->
+        <div id="pageDhikr" class="page">
+            <div>
+                <h3>حصن المسلم - الأذكار الكاملة</h3>
+                
+                <div class="dhikr-card">
+                    <b>أذكار الصباح الكاملة:</b><br>
+                    • اللّهم أنت ربي لا إله إلا أنت خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي فإنّه لا يغفر الذنوب إلا أنت.<br>
+                    • أصبحنا وأصبح الملك لله رب العالمين، اللهم إني أسألك خير هذا اليوم فتحه ونصره ونوره وبركته وهداه، وأعوذ بك من شر ما فيه وشر ما بعده.
+                </div>
+
+
+                <div class="dhikr-card">
+                    <b>أذكار المساء الكاملة:</b><br>
+                    • أمسينا وأمسى الملك لله رب العالمين، اللهم إني أسألك خير هذه الليلة فتحها ونصبرها ونورها وبركتها وهداها، وأعوذ بك من شر ما فيها وشر ما بعدها.<br>
+                    • اللّهم بك أمسينا وبك نحيا وبك نموت وإليك المصير.
+                </div>
+
+
+                <div class="dhikr-card">
+                    <b>أذكار دبر الصلوات المفروضة:</b><br>
+                    • أستغفر الله (ثلاثاً)، اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام.<br>
+                    • لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.
+                </div>
+
+
+                <div class="dhikr-card">
+                    <b>أذكار النوم والاستيقاظ:</b><br>
+                    • باسمك ربي وضعت جنبي وبك أرفعه، إن أمسكت نفسي فارحمتها، وإن أرسلتها فاحفظها بما تحفظ به عبادك الصالحين.<br>
+                    • الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور.
+                </div>
+
+
+                <button class="btn" style="background-color: #8e44ad;" onclick="completeDhikr()">أتممت أذكاري اليوم (+5 نقاط)</button>
+            </div>
+        </div>
+
+
+        <!-- 5. صفحة التحدي والمشاركة الجماعية -->
+        <div id="pageChallenge" class="page">
+            <div>
+                <h3>نظام التحدي والمجموعات</h3>
+                <div class="mode-options">
+                    <div class="mode-btn active" id="groupBtn" onclick="toggleMode('group')">تحدي جماعي / ثنائي</div>
+                    <div class="mode-btn" id="soloBtn" onclick="toggleMode('solo')">بدون تنافس (شخصي)</div>
+                </div>
+                
+                <div id="inviteSection" style="margin-top: 15px;">
+                    <label style="font-size: 13px; color: #555;">رابط دعوة الأصدقاء والمشاركين:</label>
+                    <button class="btn" style="background-color: #8e44ad;" onclick="copyInviteLink()">نسخ رابط الدعوة للمجموعة</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <script>
+        let userScore = 100;
+        let userCity = "";
+        let userCountry = "";
+        let currentPageNumber = 1;
+
+
+        const localSurahsList = [
+            {number: 1, name: "الفاتحة", page: 1}, {number: 2, name: "البقرة", page: 2}, {number: 3, name: "آل عمران", page: 50},
+            {number: 4, name: "النساء", page: 77}, {number: 5, name: "المائدة", page: 106}, {number: 6, name: "الأنعام", page: 128},
+            {number: 7, name: "الأعراف", page: 151}, {number: 8, name: "الأنفال", page: 177}, {number: 9, name: "التوبة", page: 187},
+            {number: 10, name: "يونس", page: 208}, {number: 11, name: "هود", page: 221}, {number: 12, name: "يوسف", page: 235},
+            {number: 13, name: "الرعد", page: 249}, {number: 14, name: "إبراهيم", page: 255}, {number: 15, name: "الحجر", page: 262},
+            {number: 16, name: "النحل", page: 267}, {number: 17, name: "الإسراء", page: 282}, {number: 18, name: "الكهف", page: 293},
+            {number: 19, name: "مريم", page: 305}, {number: 20, name: "طه", page: 312}, {number: 21, name: "الأنبياء", page: 322},
+            {number: 22, name: "الحج", page: 332}, {number: 23, name: "المؤمنون", page: 342}, {number: 24, name: "النور", page: 350},
+            {number: 25, name: "الفرقان", page: 359}, {number: 26, name: "الشعراء", page: 367}, {number: 27, name: "النمل", page: 377},
+            {number: 28, name: "القصص", page: 385}, {number: 29, name: "العنكبوت", page: 396}, {number: 30, name: "الروم", page: 404},
+            {number: 31, name: "لقمان", page: 411}, {number: 32, name: "السجدة", page: 415}, {number: 33, name: "الأحزاب", page: 418},
+            {number: 34, name: "سبأ", page: 428}, {number: 35, name: "فاطر", page: 434}, {number: 36, name: "يس", page: 440},
+            {number: 37, name: "الصافات", page: 446}, {number: 38, name: "ص", page: 453}, {number: 39, name: "الزمر", page: 458},
+            {number: 40, name: "غافر", page: 467}, {number: 41, name: "فصلت", page: 477}, {number: 42, name: "الشورى", page: 483},
+            {number: 43, name: "الزخرف", page: 489}, {number: 44, name: "الدخان", page: 496}, {number: 45, name: "الجاثية", page: 499},
+            {number: 46, name: "الأحقاف", page: 502}, {number: 47, name: "محمد", page: 507}, {number: 48, name: "الفتح", page: 511},
+            {number: 49, name: "الحجرات", page: 515}, {number: 50, name: "ق", page: 518}, {number: 51, name: "الذاريات", page: 520},
+            {number: 52, name: "الطور", page: 523}, {number: 53, name: "النجم", page: 526}, {number: 54, name: "القمر", page: 528},
+            {number: 55, name: "الرحمن", page: 531}, {number: 56, name: "الواقعة", page: 534}, {number: 57, name: "الحديد", page: 537},
+            {number: 58, name: "المجادلة", page: 542}, {number: 59, name: "الحشر", page: 545}, {number: 60, name: "الممتحنة", page: 549},
+            {number: 61, name: "الصف", page: 551}, {number: 62, name: "الجمعة", page: 553}, {number: 63, name: "المنافقون", page: 554},
+            {number: 64, name: "التغابن", page: 556}, {number: 65, name: "الطلاق", page: 558}, {number: 66, name: "التحريم", page: 560},
+            {number: 67, name: "الملك", page: 562}, {number: 68, name: "القلم", page: 564}, {number: 69, name: "الحاقة", page: 566},
+            {number: 70, name: "المعارج", page: 568}, {number: 71, name: "نوح", page: 570}, {number: 72, name: "الجن", page: 572},
+            {number: 73, name: "المزمل", page: 574}, {number: 74, name: "المدثر", page: 575}, {number: 75, name: "القيامة", page: 577},
+            {number: 76, name: "الإنسان", page: 578}, {number: 77, name: "المرسلات", page: 580}, {number: 78, name: "النبأ", page: 582},
+            {number: 79, name: "النازعات", page: 583}, {number: 80, name: "عبس", page: 585}, {number: 81, name: "التكوير", page: 586},
+            {number: 82, name: "الإنفطار", page: 587}, {number: 83, name: "المطففين", page: 587}, {number: 84, name: "الإنشقاق", page: 589},
+            {number: 85, name: "البروج", page: 590}, {number: 86, name: "الطارق", page: 591}, {number: 87, name: "الأعلى", page: 591},
+            {number: 88, name: "الغاشية", page: 592}, {number: 89, name: "الفجر", page: 593}, {number: 90, name: "البلد", page: 594},
+            {number: 91, name: "الشمس", page: 595}, {number: 92, name: "الليل", page: 595}, {number: 93, name: "الضحى", page: 596},
+            {number: 94, name: "الشرح", page: 596}, {number: 95, name: "التين", page: 597}, {number: 96, name: "العلق", page: 597},
+            {number: 97, name: "القدر", page: 598}, {number: 98, name: "البينة", page: 598}, {number: 99, name: "الزلزلة", page: 599},
+            {number: 100, name: "العاديات", page: 599}, {number: 101, name: "القارعة", page: 600}, {number: 102, name: "التكاثر", page: 600},
+            {number: 103, name: "العصر", page: 601}, {number: 104, name: "الهمزة", page: 601}, {number: 105, name: "الفيل", page: 601},
+            {number: 106, name: "قريش", page: 602}, {number: 107, name: "الماعون", page: 602}, {number: 108, name: "الكوثر", page: 602},
+            {number: 109, name: "الكافرون", page: 603}, {number: 110, name: "النصر", page: 603}, {number: 111, name: "المسد", page: 603},
+            {number: 112, name: "الإخلاص", page: 604}, {number: 113, name: "الفلق", page: 604}, {number: 114, name: "الناس", page: 604}
+        ];
+
+
+        function updateScore(points) {
+            userScore += points;
+            localStorage.setItem('userScore', userScore);
+            document.getElementById('scoreValue').innerText = userScore;
+        }
+
+
+        function saveInitialLocation() {
+            const city = document.getElementById('initCity').value.trim() || "القدس";
+            const country = document.getElementById('initCountry').value.trim() || "فلسطين";
+            userCity = city;
+            userCountry = country;
+            localStorage.setItem('userCity', city);
+            localStorage.setItem('userCountry', country);
+            document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
+            document.getElementById('welcomeModal').style.display = 'none';
+
+
+            requestRealNotification(city, country);
+        }
+
+
+        function updateLocation() {
+            const city = document.getElementById('updateCity').value.trim() || "القدس";
+            const country = document.getElementById('updateCountry').value.trim() || "فلسطين";
+            userCity = city;
+            userCountry = country;
+            localStorage.setItem('userCity', city);
+            localStorage.setItem('userCountry', country);
+            document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
+            
+            requestRealNotification(city, country);
+            alert(`تم تحديث الموقع بنجاح إلى (${city}، ${country}) وتفعيل الإشعارات.`);
+        }
+
+
+        function requestRealNotification(city, country) {
+            if (!("Notification" in window)) return;
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    new Notification("تطبيق صلاتي", { body: `تم تفعيل إشعارات الأذان في ${city}، ${country}` });
+                }
+            });
+        }
+
+
+        function switchPage(pageName) {
+            const pages = ['pageHome', 'pageLocation', 'pageQuran', 'pageDhikr', 'pageChallenge'];
+            const tabs = ['tabHome', 'tabLocation', 'tabQuran', 'tabDhikr', 'tabChallenge'];
+            pages.forEach(p => document.getElementById(p).classList.remove('active-page'));
+            tabs.forEach(t => document.getElementById(t).classList.remove('active'));
+
+
+            if (pageName === 'home') {
+                document.getElementById('pageHome').classList.add('active-page');
+                document.getElementById('tabHome').classList.add('active');
+            } else if (pageName === 'location') {
+                document.getElementById('pageLocation').classList.add('active-page');
+                document.getElementById('tabLocation').classList.add('active');
+            } else if (pageName === 'quran') {
+                document.getElementById('pageQuran').classList.add('active-page');
+                document.getElementById('tabQuran').classList.add('active');
+            } else if (pageName === 'dhikr') {
+                document.getElementById('pageDhikr').classList.add('active-page');
+                document.getElementById('tabDhikr').classList.add('active');
+            } else if (pageName === 'challenge') {
+                document.getElementById('pageChallenge').classList.add('active-page');
+                document.getElementById('tabChallenge').classList.add('active');
+            }
+        }
+
+
+        function populateSurahDropdown(surahs) {
+            let select = document.getElementById('surahDropdownSelect');
+            if(!select) return;
+            select.innerHTML = '<option value="">-- اختر السورة مباشرة من القائمة --</option>';
+            surahs.forEach(s => {
+                let opt = document.createElement('option');
+                opt.value = s.page;
+                opt.textContent = `${s.number}. سورة ${s.name} (صفحة ${s.page})`;
+                select.appendChild(opt);
+            });
+        }
+
+
+        function filterSurahsList() {
+            let query = document.getElementById('surahSearchInput').value.trim().toLowerCase();
+            if(!query) {
+                populateSurahDropdown(localSurahsList);
+                return;
+            }
+            let filtered = localSurahsList.filter(s => s.name.toLowerCase().includes(query) || s.number.toString() === query);
+            populateSurahDropdown(filtered);
+        }
+
+
+        function onSurahDropdownChange() {
+            let pageNum = document.getElementById('surahDropdownSelect').value;
+            if(!pageNum) return;
+            loadPage(parseInt(pageNum));
+        }
+
+
+        function handlePrayerChoice(choice) {
+            if(choice === 'prayed') {
+                alert("تقبل اللّٰه طاعتك! تم إضافة 10 نقاط لرصيدك");
+                updateScore(10);
+            } else if(choice === 'lazy') {
+                alert("تذكر قول الله تعالى: (ما سلككم في سقر قالوا لم نك من المصلين ولم نك نطعم المسكين وكنا نخوض مع الخائضين).\nتقصير واضح بسبب اللعب أو الكسل! تم خصم 20 نقطة من رصيدك.");
+                updateScore(-20);
+            } else if(choice === 'excuse') {
+                alert("تم قبول عذرك الشرعي نظراً لأنه ظرف حقيقي خارج عن إرادتك. لن تُخصم نقاطك.");
+            }
+        }
+
+
+        function completeDhikr() {
+            alert("تقبل الله طاعتك! تم إتمام أذكارك بنجاح وإضافة 5 نقاط لرصيدك");
+            updateScore(5);
+        }
+
+
+        async function loadPage(pageNum) {
+            if(pageNum < 1) pageNum = 1;
+            if(pageNum > 604) pageNum = 604;
+            currentPageNumber = pageNum;
+            localStorage.setItem('savedQuranPage', pageNum);
+
+
+            document.getElementById('pageNumberInput').value = pageNum;
+            document.getElementById('quranTextContent').innerText = "جاري تحميل الصفحة...";
+            document.getElementById('quranInfoBar').innerText = "جاري تحميل بيانات الصفحة...";
+
+
+            try {
+                let res = await fetch(`https://api.alquran.cloud/v1/page/${pageNum}/quran-uthmani`);
+                let data = await res.json();
+                let ayahs = data.data.ayahs;
+
+
+                let surahsInPage = [...new Set(ayahs.map(a => a.surah.name))].join(' ، ');
+                let currentJuz = ayahs.length > 0 ? ayahs[0].juz : "";
+
+
+                document.getElementById('quranInfoBar').innerHTML = `سورة: <b>${surahsInPage}</b> | الجزء: <b>${currentJuz}</b> | الصفحة: <b>${pageNum}</b>`;
+                document.getElementById('fsBarInfo').innerHTML = `الصفحة: ${pageNum} (جزء ${currentJuz})`;
+
+
+                let htmlText = "";
+                
+                ayahs.forEach(ayah => {
+                    let text = ayah.text;
+                    
+                    if (ayah.numberInSurah === 1) {
+                        text = text.replace(/^بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\s*/g, "")
+                                   .replace(/^بسم الله الرحمن الرحيم\s*/g, "")
+                                   .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
+                                   .replace(/بسم الله الرحمن الرحيم/g, "").trim();
+                    }
+
+
+                    if (ayah.numberInSurah === 1 && ayah.surah.number !== 9) {
+                        htmlText += `
+                            <div class="surah-banner">${ayah.surah.name}</div>
+                            <div class="basmalah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+                        `;
+                    }
+
+
+                    htmlText += `${text} ۝<span style="font-size: 15px; color: #16a085; margin: 0 4px;">(${ayah.numberInSurah})</span> `;
+                });
+
+
+                document.getElementById('quranTextContent').innerHTML = htmlText;
+            } catch (err) {
+                document.getElementById('quranTextContent').innerText = "حدث خطأ في تحميل الصفحة، تأكد من اتصال الإنترنت.";
+            }
+        }
+
+
+        function loadPageByNumberInput() {
+            let num = parseInt(document.getElementById('pageNumberInput').value) || 1;
+            loadPage(num);
+        }
+
+
+        function nextPage() {
+            if(currentPageNumber < 604) {
+                loadPage(currentPageNumber + 1);
+                document.getElementById('quranDisplay').scrollTop = 0;
+            } else {
+                alert("هذه هي الصفحة الأخيرة في القرآن الكريم.");
+            }
+        }
+
+
+        function prevPage() {
+            if(currentPageNumber > 1) {
+                loadPage(currentPageNumber - 1);
+                document.getElementById('quranDisplay').scrollTop = 0;
+            } else {
+                alert("هذه هي الصفحة الأولى في القرآن الكريم.");
+            }
+        }
+
+
+        function toggleQuranFullscreen() {
+            let quranBox = document.getElementById('quranDisplay');
+            let btn = document.getElementById('fullscreenQuranBtn');
+            quranBox.classList.toggle('fullscreen-quran');
+            
+            if(quranBox.classList.contains('fullscreen-quran')) {
+                btn.innerText = "تصغير المصحف";
+            } else {
+                btn.innerText = "تكبير المصحف للشاشة";
+            }
+        }
+
+
+        function saveBookmark() {
+            localStorage.setItem('userBookmarkPage', currentPageNumber);
+            alert("تم حفظ صفحة قراءتك الحالية بنجاح!");
+        }
+
+
+        function goToBookmark() {
+            let bookmark = localStorage.getItem('userBookmarkPage') || 1;
+            loadPage(parseInt(bookmark));
+            alert("تم إرجاعك إلى صفحتك المحفوظة!");
+        }
+
+
+        function copyInviteLink() {
+            const inviteLink = "https://salati-app.qiivx.com/join?ref=user_" + Math.floor(Math.random() * 10000);
+            navigator.clipboard.writeText(inviteLink).then(() => {
+                alert("تم نسخ رابط دعوة التحدي بنجاح:\n" + inviteLink);
+            });
+        }
+
+
+        function toggleMode(mode) {
+            const groupBtn = document.getElementById('groupBtn');
+            const soloBtn = document.getElementById('soloBtn');
+            const inviteSection = document.getElementById('inviteSection');
+
+
+            if(mode === 'group') {
+                groupBtn.classList.add('active');
+                soloBtn.classList.remove('active');
+                inviteSection.style.display = 'block';
+            } else {
+                soloBtn.classList.add('active');
+                groupBtn.classList.remove('active');
+                inviteSection.style.display = 'none';
+                alert("تم التحويل للوضع الشخصي بنجاح.");
+            }
+        }
+
+
+        window.onload = function() {
+            populateSurahDropdown(localSurahsList);
+
+
+            let savedScore = localStorage.getItem('userScore');
+            if(savedScore) {
+                userScore = parseInt(savedScore);
+                document.getElementById('scoreValue').innerText = userScore;
+            }
+
+
+            let savedCity = localStorage.getItem('userCity');
+            let savedCountry = localStorage.getItem('userCountry');
+            if(savedCity && savedCountry) {
+                userCity = savedCity;
+                userCountry = savedCountry;
+                document.getElementById('currentLocDisplay').innerText = `${userCity}، ${userCountry}`;
+                document.getElementById('welcomeModal').style.display = 'none';
+            } else {
+                document.getElementById('welcomeModal').style.display = 'flex';
+            }
+
+
+            let lastPage = localStorage.getItem('savedQuranPage');
+            if(lastPage) {
+                currentPageNumber = parseInt(lastPage);
+            }
+            loadPage(currentPageNumber);
+        }
+    </script>
+
+
+</body>
+</html>
+
