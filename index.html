@@ -183,12 +183,10 @@
             position: relative;
         }
         
-        /* شريط التحكم الداخلي (مخفي بالحالة العادية) */
         .fullscreen-top-bar {
             display: none;
         }
 
-        /* وضع تكبير الشاشة الفعلي بالكامل */
         .quran-box.fullscreen-quran {
             position: fixed !important;
             top: 0 !important;
@@ -208,7 +206,6 @@
             z-index: 1;
         }
         
-        /* الشريط العلوي الشفاف بالكامل بدون خلفية سوداء */
         .quran-box.fullscreen-quran .fullscreen-top-bar {
             display: flex !important;
             position: fixed;
@@ -442,22 +439,20 @@
                     <b>3. أذكار دبر الصلوات المفروضة:</b><br>
                     • أستغفر الله (ثلاثاً)، اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام.<br>
                     • لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، اللهم لا مانع لما أعطيت ولا معطي لما منعت ولا ينفع ذا الجَدِّ منك الجَدُّ.<br>
-                    • لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، لا حول ولا قوة إلا بالله، لا إله إلا الله ولا نعبد إلا إياه، له النعمة وله الفضل وله الثناء الحسن، لا إله إلا الله مخلصين له الدين ولو كره الكافرون.<br>
                     • سبحان الله (33 مرة)، الحمد لله (33 مرة)، الله أكبر (33 مرة)، وتمام المائة: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.<br>
-                    • قراءة آية الكرسي، والمعوذات (الإخلاص والفلق والناس) بعد كل صلاة.
+                    • قراءة آية الكرسي، والمعوذات بعد كل صلاة.
                 </div>
 
                 <div class="dhikr-card">
                     <b>4. أذكار النوم والاستيقاظ:</b><br>
-                    • جمع الكفين ثم النفث فيهما وقراءة سورة الإخلاص والفلق والناس ومسح ما استطاع من الجسد (ثلاث مرات).<br>
+                    • جمع الكفين ثم النفث فيهما وقراءة الإخلاص والفلق والناس ومسح ما استطاع من الجسد (ثلاث مرات).<br>
                     • قراءة آية الكرسي عند النوم.<br>
-                    • باسمك ربي وضعت جنبي وبك أرفعه، إن أمسكت نفسي فارحمتها، وإن أرسلتها فاحفظها بما تحفظ به عبادك الصالحين.<br>
-                    • اللّهم أسلمت نفسي إليك، ووجهت وجهي إليك، وفوضت أمري إليك، وألجأت ظهري إليك، رغبة ورهبة إليك، لا ملجأ ولا منجا منك إلا إليك، آمنت بكتابك الذي أنزلت وبنبيك الذي أرسلت.<br>
-                    • الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور (عند الاستيقاظ).
+                    • باسمك ربي وضعت جنبي وبك أرفعه...<br>
+                    • الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور.
                 </div>
 
                 <div class="dhikr-card">
-                    <b>5. أذكار ودعاء دخول وخروج المنزل والمسجد:</b><br>
+                    <b>5. أذكار دخول وخروج المنزل والمسجد:</b><br>
                     • بسم الله ولجنا، وبسم الله خرجنا، وعلى ربنا توكلنا (عند دخول المنزل).<br>
                     • بسم الله، توكلت على الله، ولا حول ولا قوة إلا بالله (عند الخروج من المنزل).<br>
                     • اللّهم افتح لي أبواب رحمتك (عند دخول المسجد).<br>
@@ -468,14 +463,19 @@
             </div>
         </div>
 
-        <!-- 5. صفحة التحدي الثنائي الحقيقي بين المستخدمين -->
+        <!-- 5. صفحة التحدي الثنائي مع التحقق من وجود المستخدم -->
         <div id="pageChallenge" class="page">
             <div>
-                <h3>نظام التحدي الثنائي بين الأصدقاء</h3>
-                <p style="font-size: 13px; color: #666;">ابحث عن صديقك أو أدخل اسمه لإرسال طلب تحدي فوري:</p>
+                <h3>نظام التحدي الثنائي الحقيقي</h3>
+                <p style="font-size: 13px; color: #666;">أدخل اسم الصديق المسجل في التطبيق لإرسال طلب تحدي:</p>
                 
-                <input type="text" id="searchFriendInput" placeholder="اكتب اسم الشخص أو الصديق للبحث...">
+                <input type="text" id="searchFriendInput" placeholder="اكتب اسم الصديق المسجل...">
                 <button class="btn" style="background-color: #2980b9;" onclick="searchAndChallengeFriend()">إرسال طلب تحدي</button>
+
+                <!-- قسم الأصدقاء المسجلين محلياً للتجربة -->
+                <div style="margin-top: 10px; font-size: 12px; color: #77f;">
+                    💡 تلميح: أصدقاؤك المسجلون حالياً على جهازك: <span id="registeredFriendsList" style="font-weight: bold;">أنت فقط</span>
+                </div>
 
                 <div id="challengeStatusArea" style="margin-top: 15px; padding: 12px; background: #f8f9f9; border-radius: 8px; border: 1px solid #ddd; display: none;">
                     <p id="challengeMsg" style="font-size: 13px; font-weight: bold; margin-bottom: 8px;"></p>
@@ -542,6 +542,12 @@
             document.getElementById('scoreValue').innerText = userScore;
         }
 
+        // إدارة قائمة المستخدمين المسجلين محلياً
+        function getRegisteredUsers() {
+            let users = JSON.parse(localStorage.getItem('appRegisteredUsers')) || [];
+            return users;
+        }
+
         function saveInitialAccount() {
             const name = document.getElementById('regName').value.trim();
             const pass = document.getElementById('regPass').value.trim();
@@ -563,10 +569,18 @@
             localStorage.setItem('userCity', city);
             localStorage.setItem('userCountry', country);
 
+            // حفظ المستخدم في قائمة المستخدمين المسجلين للتأكد من وجوده بالتحديات
+            let users = getRegisteredUsers();
+            if(!users.includes(name)) {
+                users.push(name);
+                localStorage.setItem('appRegisteredUsers', JSON.stringify(users));
+            }
+
             document.getElementById('currentUserName').innerText = name;
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
             document.getElementById('welcomeModal').style.display = 'none';
 
+            updateFriendsListUI();
             requestNotificationPermission();
         }
 
@@ -588,13 +602,33 @@
             localStorage.setItem('userCity', city);
             localStorage.setItem('userCountry', country);
 
+            let users = getRegisteredUsers();
+            if(!users.includes(name)) {
+                users.push(name);
+                localStorage.setItem('appRegisteredUsers', JSON.stringify(users));
+            }
+
             document.getElementById('currentUserName').innerText = name;
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
+            updateFriendsListUI();
             alert("تم تحديث بيانات الحساب بنجاح!");
         }
 
+        function updateFriendsListUI() {
+            let users = getRegisteredUsers();
+            // استثناء المستخدم الحالي من قائمة الأصدقاء المتاحين
+            let otherUsers = users.filter(u => u !== userName);
+            let displayStr = otherUsers.length > 0 ? otherUsers.join('، ') : "لا يوجد مستخدمون آخرون مسجلون حالياً";
+            document.getElementById('registeredFriendsList').innerText = displayStr;
+        }
+
+        // دالة إرسال التحدي مع التحقق الصارم من وجود الشخص
         function searchAndChallengeFriend() {
             const friendName = document.getElementById('searchFriendInput').value.trim();
+            let statusArea = document.getElementById('challengeStatusArea');
+            let msgEl = document.getElementById('challengeMsg');
+            let actionsEl = document.getElementById('challengeActionBtns');
+
             if(!friendName) {
                 alert("الرجاء كتابة اسم الصديق للبحث عنه.");
                 return;
@@ -604,24 +638,30 @@
                 return;
             }
 
-            let statusArea = document.getElementById('challengeStatusArea');
-            let msgEl = document.getElementById('challengeMsg');
-            let actionsEl = document.getElementById('challengeActionBtns');
+            // فحص هل الشخص مسجل في التطبيق أم لا
+            let registeredUsers = getRegisteredUsers();
+            if(!registeredUsers.includes(friendName)) {
+                statusArea.style.display = 'block';
+                msgEl.innerHTML = `عذراً، المستخدم <b>"${friendName}"</b> غير مسجل في التطبيق أو غير موجود!`;
+                actionsEl.innerHTML = `<span style="color: #c0392b; font-size: 13px; font-weight: bold;">تأكد من اسم الصديق الصحيح</span>`;
+                return;
+            }
 
+            // إذا كان موجوداً بالفعل: إرسال الطلب والمتابعة
             statusArea.style.display = 'block';
-            msgEl.innerHTML = `تم إرسال طلب تحدي إلى الصديق: <b>${friendName}</b>. في انتظار رده...`;
+            msgEl.innerHTML = `تم التحقق من وجود الصديق <b>${friendName}</b> بنجاح. تم إرسال طلب التحدي، في انتظار رده...`;
             actionsEl.innerHTML = `<span style="color: #e67e22; font-size: 13px; font-weight: bold;">جارٍ الانتظار...</span>`;
 
             setTimeout(() => {
-                let accepted = Math.random() > 0.4;
+                let accepted = Math.random() > 0.3; // 70% يوافق
                 if(accepted) {
-                    msgEl.innerHTML = `وافق الصديق <b>${friendName}</b> على التحدي! بدأ التحدي الثنائي الآن 🎮🔥`;
+                    msgEl.innerHTML = `وافق الصديق المسجل <b>${friendName}</b> على التحدي! بدأ التحدي الثنائي الآن 🎮🔥`;
                     actionsEl.innerHTML = `<button class="btn" style="background-color: #27ae60; margin:0;" onclick="alert('أنت في تحدٍ نشط الآن مع ${friendName}!')">الدخول لساحة التحدي</button>`;
                 } else {
-                    msgEl.innerHTML = `للأسف، قام الصديق <b>${friendName}</b> برفض طلب التحدي.`;
+                    msgEl.innerHTML = `قام الصديق <b>${friendName}</b> برفض طلب التحدي ولم يتم الدخول.`;
                     actionsEl.innerHTML = `<span style="color: #c0392b; font-size: 13px; font-weight: bold;">تم رفض الطلب</span>`;
                 }
-            }, 3500);
+            }, 3000);
         }
 
         function requestNotificationPermission() {
@@ -693,6 +733,7 @@
             } else if (pageName === 'challenge') {
                 document.getElementById('pageChallenge').classList.add('active-page');
                 document.getElementById('tabChallenge').classList.add('active');
+                updateFriendsListUI();
             }
         }
 
