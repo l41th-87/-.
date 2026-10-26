@@ -7,7 +7,7 @@
     <!-- استدعاء خط المصحف العثماني الأصيل -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- استدعاء مكتبة Firebase السحابية (App + Realtime Database) -->
+    <!-- استدعاء مكتبة Firebase السحابية -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -63,7 +63,6 @@
         .page.active-page {
             display: block;
         }
-        /* نافذة إدخال الحساب والموقع الأولية الإجبارية */
         #welcomeModal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -169,7 +168,6 @@
             font-weight: bold;
         }
         
-        /* صندوق عرض الآيات (الوضع العادي) */
         .quran-box {
             background: #fef9e7;
             padding: 25px;
@@ -264,68 +262,55 @@
             gap: 8px;
             margin-top: 12px;
         }
-        .mode-options {
+        .leaderboard-item {
             display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            margin-bottom: 10px;
-        }
-        .mode-btn {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #16a085;
-            background: white;
-            color: #16a085;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-            text-align: center;
-        }
-        .mode-btn.active {
-            background: #16a085;
-            color: white;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8f9f9;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            font-size: 14px;
+            border-right: 4px solid #16a085;
         }
     </style>
 </head>
 <body>
 
-    <!-- نافذة إنشاء الحساب والموقع الإجبارية أول مرة -->
+    <!-- نافذة إنشاء الحساب -->
     <div id="welcomeModal" style="display: none;">
         <div class="modal-content">
             <h3>إنشاء حسابك السحابي في صلاتي</h3>
-            <p style="font-size: 13px; color: #666;">أنشئ حسابك لكي يتمكن أصدقاؤك من العثور عليك وتحديك أونلاين:</p>
+            <p style="font-size: 13px; color: #666;">أنشئ حسابك لكي يظهر اسمك في لوحة الصدارة وتتحدى أصدقاءك:</p>
             <input type="text" id="regName" placeholder="اسم المستخدم (مثال: عبداللّٰه، ليث، فهد، وغيره)">
             <input type="password" id="regPass" placeholder="كلمة المرور">
             <input type="text" id="regCity" placeholder="اسم المدينة (مثال: القدس)">
-            <input type="text" id="regCountry" placeholderوغيره="اسم الدولة (مثال: فلسطين)">
+            <input type="text" id="regCountry" placeholder=وغيره"اسم الدولة (مثال: فلسطين)">
             <button class="btn" onclick="saveInitialAccount()">حفظ ودخول سحابي</button>
         </div>
     </div>
 
     <header>تطبيق صلاتي والمصحف الشريف</header>
 
-    <!-- شريط التنقل بين أقسام التطبيق -->
+    <!-- شريط التنقل -->
     <div class="nav-bar">
         <button class="nav-btn active" id="tabHome" onclick="switchPage('home')">الرئيسية</button>
         <button class="nav-btn" id="tabLocation" onclick="switchPage('location')">حسابي والموقع</button>
         <button class="nav-btn" id="tabQuran" onclick="switchPage('quran')">القرآن والسُنن</button>
         <button class="nav-btn" id="tabDhikr" onclick="switchPage('dhikr')">الأذكار</button>
-        <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي السحابي</button>
+        <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي والصدارة</button>
     </div>
 
     <div class="container" id="mainContainer">
         
-        <!-- لوحة النقاط والمستخدم -->
         <div class="score-display">
             المستخدم: <span id="currentUserName">-</span> | رصيدك: <span id="scoreValue">100</span> | الموقع: <span id="currentLocDisplay">غير محدد</span>
         </div>
 
-        <!-- 1. الصفحة الرئيسية -->
+        <!-- 1. الرئيسية -->
         <div id="pageHome" class="page active-page">
             <div id="prayerAlertBox" style="display: none; background: #fff5f5; padding: 15px; border-radius: 10px; border: 2px dashed #e74c3c; margin-bottom: 15px;">
                 <h3 id="activePrayerTitle">حين الصلاة</h3>
-                <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">حين الصلاة: أجب بصراحة، فأنت لا تغش الناس بل تغش الله عز وجل:</p>
+                <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">أجب بصراحة (تأخذ نقاطاً في رصيدك لتفوز بالتحدي الأسبوعي):</p>
                 <button class="btn" style="background-color: #27ae60; margin-bottom: 8px;" onclick="handlePrayerChoice('prayed')">واللّٰه أنني صليت (+10 نقاط)</button>
                 <button class="btn" style="background-color: #c0392b; margin-bottom: 8px;" onclick="handlePrayerChoice('lazy')">لم أصلي (بسبب الكسل أو اللعب) (-20 نقطة)</button>
                 <button class="btn" style="background-color: #2980b9;" onclick="handlePrayerChoice('excuse')">لم أصلي لعذر شرعي (بدون خصم نقاط)</button>
@@ -333,28 +318,25 @@
 
             <div id="noPrayerState" style="text-align: center; padding: 30px 10px; color: #555;">
                 <h3 style="color: #16a085;">الحمد لله على كل حال</h3>
-                <p style="font-size: 14px;">ليس وقت صلاة حالياً. سيظهر لك تنبيه الصلاة تلقائياً وفوراً عند دخول وقت الصلاة بمشيئة الله.</p>
+                <p style="font-size: 14px;">ليس وقت صلاة حالياً. سيظهر لك تنبيه الصلاة تلقائياً عند دخول الوقت.</p>
             </div>
         </div>
 
-        <!-- 2. صفحة الحساب والموقع الجغرافي -->
+        <!-- 2. الحساب والموقع -->
         <div id="pageLocation" class="page">
             <div>
-                <h3>إعدادات الحساب والموقع السحابي</h3>
+                <h3>إعدادات الحساب والموقع</h3>
                 <label style="font-size: 13px; color: #555;">اسم المستخدم:</label>
                 <input type="text" id="updateName">
-                
                 <label style="font-size: 13px; color: #555;">اسم المدينة:</label>
                 <input type="text" id="updateCity">
-                
                 <label style="font-size: 13px; color: #555;">اسم الدولة:</label>
                 <input type="text" id="updateCountry">
-                
-                <button class="btn" style="background-color: #2980b9;" onclick="updateAccountInfo()">تحديث بيانات السحابة</button>
+                <button class="btn" style="background-color: #2980b9;" onclick="updateAccountInfo()">تحديث البيانات</button>
             </div>
         </div>
 
-        <!-- 3. صفحة القرآن الكريم والسُنن والبحث -->
+        <!-- 3. القرآن والسُنن -->
         <div id="pageQuran" class="page">
             <div>
                 <h3>سور السُنن والفضل</h3>
@@ -364,32 +346,23 @@
                     <button class="sunnah-btn" onclick="loadPage(440)">سورة يس</button>
                     <button class="sunnah-btn" onclick="loadPage(534)">سورة الواقعة</button>
                 </div>
-
                 <hr class="section-divider">
-
                 <h3>البحث السريع واختيار السور</h3>
                 <input type="text" id="surahSearchInput" placeholder="اكتب اسم السورة للبحث..." oninput="filterSurahsList()">
-                
                 <select id="surahDropdownSelect" onchange="onSurahDropdownChange()" style="margin-top: 5px;">
                     <option value="">-- اختر السورة مباشرة من القائمة --</option>
                 </select>
-
                 <h3 style="margin-top: 15px;">تصفح المصحف الشريف (من 1 إلى 604)</h3>
                 <div style="display: flex; gap: 8px;">
                     <input type="number" id="pageNumberInput" min="1" max="604" value="1" placeholder="رقم الصفحة">
-                    <button class="btn" style="width: 120px; margin-top: 5px;" onclick="loadPageByNumberInput()">انتقال للصفحة</button>
+                    <button class="btn" style="width: 120px; margin-top: 5px;" onclick="loadPageByNumberInput()">انتقال</button>
                 </div>
-
                 <div style="display: flex; gap: 5px; margin-top: 10px;">
                     <button class="btn" id="fullscreenQuranBtn" style="background-color: #8e44ad; font-size: 12px; padding: 6px;" onclick="toggleQuranFullscreen()">تكبير المصحف للشاشة</button>
                     <button class="btn" style="background-color: #2980b9; font-size: 12px; padding: 6px;" onclick="saveBookmark()">حفظ مكاني</button>
                     <button class="btn" style="background-color: #e67e22; font-size: 12px; padding: 6px;" onclick="goToBookmark()">العودة للمحفوظ</button>
                 </div>
-
-                <div class="quran-info-bar" id="quranInfoBar" style="margin-top: 12px;">
-                    جاري تحميل بيانات الصفحة...
-                </div>
-                
+                <div class="quran-info-bar" id="quranInfoBar" style="margin-top: 12px;">جاري التحميل...</div>
                 <div id="quranDisplay" class="quran-box">
                     <div class="fullscreen-top-bar" id="fullscreenTopBar">
                         <button class="fs-action-btn" style="background-color: #e74c3c;" onclick="toggleQuranFullscreen()">❌ تصغير</button>
@@ -399,10 +372,8 @@
                             <button class="fs-action-btn" style="background-color: #16a085;" onclick="nextPage()">التالي ⬅️</button>
                         </div>
                     </div>
-                    
-                    <div id="quranTextContent">جاري تحميل الصفحة بالخط العثماني الأصيل...</div>
+                    <div id="quranTextContent">جاري التحميل...</div>
                 </div>
-
                 <div class="page-controls">
                     <button class="btn" style="background-color: #34495e;" onclick="prevPage()">الصفحة السابقة</button>
                     <button class="btn" style="background-color: #16a085;" onclick="nextPage()">الصفحة التالية</button>
@@ -410,7 +381,7 @@
             </div>
         </div>
 
-        <!-- 4. صفحة الأذكار الكاملة -->
+        <!-- 4. الأذكار الكاملة -->
         <div id="pageDhikr" class="page">
             <div>
                 <h3>حصن المسلم - الأذكار الكاملة</h3>
@@ -423,18 +394,23 @@
             </div>
         </div>
 
-        <!-- 5. صفحة التحدي الثنائي السحابي المربوط -->
+        <!-- 5. التحدي الأسبوعي ولوحة الصدارة المباشرة -->
         <div id="pageChallenge" class="page">
             <div>
-                <h3>نظام التحدي السحابي المباشر</h3>
-                <p style="font-size: 13px; color: #666;">ابحث عن اسم صديقك المسجل بالسحابة لإرسال طلب تحدي حقيقي:</p>
+                <h3>⚔️ التحدي الأسبوعي الثنائي ولوحة الصدارة</h3>
+                <p style="font-size: 13px; color: #666;">قارن نقاطك هذا الأسبوع مع أي صديق. صاحب النقاط الأكثر يكسب +5 نقاط ويصبح رقم 1، والخاسر لا يتغير رصيده!</p>
                 
-                <input type="text" id="searchFriendInput" placeholder="اكتب اسم الصديق المسجل...">
-                <button class="btn" style="background-color: #2980b9;" onclick="searchAndChallengeFriend()">بحث وإرسال طلب تحدي</button>
+                <input type="text" id="searchFriendInput" placeholder="اكتب اسم الصديق للمقارنة وتحديه...">
+                <button class="btn" style="background-color: #2980b9;" onclick="compareWeeklyChallenge()">بدء التحدي الأسبوعي والمقارنة</button>
 
-                <div id="challengeStatusArea" style="margin-top: 15px; padding: 12px; background: #f8f9f9; border-radius: 8px; border: 1px solid #ddd; display: none;">
-                    <p id="challengeMsg" style="font-size: 13px; font-weight: bold; margin-bottom: 8px;"></p>
-                    <div id="challengeActionBtns" style="display: flex; gap: 8px;"></div>
+                <div id="challengeResultBox" style="margin-top: 15px; padding: 12px; background: #f8f9f9; border-radius: 8px; border: 1px solid #ddd; display: none; font-size: 14px; line-height: 1.8;">
+                </div>
+
+                <hr class="section-divider">
+
+                <h3>🏆 لوحة المتصدرين العامة (أونلاين)</h3>
+                <div id="leaderboardContainer" style="margin-top: 10px;">
+                    <p style="font-size: 13px; color: #888;">جاري تحميل المتصدرين...</p>
                 </div>
             </div>
         </div>
@@ -442,7 +418,7 @@
     </div>
 
     <script>
-        // --- إعدادات ربط Firebase الخاص بك (salate-abae7) ---
+        // --- إعدادات ربط Firebase الخاص بك ---
         const firebaseConfig = {
             apiKey: "AIzaSyA_iLJoHWh-gYVEsjy9inCqDqenUpQZcbo",
             authDomain: "salate-abae7.firebaseapp.com",
@@ -454,7 +430,6 @@
             measurementId: "G-EH5K2LMNXF"
         };
 
-        // تهيئة الفايربيز
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -510,6 +485,11 @@
             userScore += points;
             localStorage.setItem('userScore', userScore);
             document.getElementById('scoreValue').innerText = userScore;
+
+            // تحديث النقاط بالسحابة فوراً لتظهر بلوحة الصدارة
+            if(userName) {
+                db.ref('users/' + userName).update({ score: userScore });
+            }
         }
 
         function saveInitialAccount() {
@@ -542,8 +522,7 @@
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
             document.getElementById('welcomeModal').style.display = 'none';
 
-            listenForChallenges();
-            requestNotificationPermission();
+            loadLeaderboard();
         }
 
         function updateAccountInfo() {
@@ -573,17 +552,17 @@
 
             document.getElementById('currentUserName').innerText = name;
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
-            alert("تم تحديث بيانات السحابة بنجاح!");
+            alert("تم تحديث البيانات بنجاح!");
+            loadLeaderboard();
         }
 
-        function searchAndChallengeFriend() {
+        // نظام التحدي الأسبوعي والمقارنة المباشرة
+        function compareWeeklyChallenge() {
             const friendName = document.getElementById('searchFriendInput').value.trim();
-            let statusArea = document.getElementById('challengeStatusArea');
-            let msgEl = document.getElementById('challengeMsg');
-            let actionsEl = document.getElementById('challengeActionBtns');
+            let resultBox = document.getElementById('challengeResultBox');
 
             if(!friendName) {
-                alert("الرجاء كتابة اسم الصديق.");
+                alert("الرجاء كتابة اسم الصديق للمقارنة.");
                 return;
             }
             if(friendName === userName) {
@@ -591,108 +570,62 @@
                 return;
             }
 
+            resultBox.style.display = 'block';
+            resultBox.innerHTML = `جاري جلب نقاط الصديق <b>${friendName}</b> من السحابة...`;
+
             db.ref('users/' + friendName).once('value', (snapshot) => {
-                statusArea.style.display = 'block';
-                if (snapshot.exists()) {
-                    msgEl.innerHTML = `تم العثور على الصديق <b>${friendName}</b> أونلاين! جاري إرسال طلب التحدي...`;
-                    actionsEl.innerHTML = `<span style="color: #e67e22; font-size: 13px; font-weight: bold;">في انتظار رد الصديق...</span>`;
+                if(snapshot.exists()) {
+                    let friendData = snapshot.val();
+                    let friendScore = friendData.score || 100;
 
-                    db.ref('challenges/' + friendName).set({
-                        from: userName,
-                        status: 'pending',
-                        timestamp: Date.now()
-                    });
+                    let html = `<b>📊 نتائج التحدي الأسبوعي:</b><br>`;
+                    html += `• نقاطك: <b>${userScore}</b><br>`;
+                    html += `• نقاط الصديق (${friendName}): <b>${friendScore}</b><br><hr style="margin:8px 0;">`;
 
+                    if(userScore > friendScore) {
+                        let newScore = userScore + 5;
+                        updateScore(5);
+                        html += `🎉 <b>ألف مبروك!</b> أنت المتصدر هذا الأسبوع بنقاط أعلى (${userScore} مقابل ${friendScore}).<br>🏆 تم إضافة <b>+5 نقاط</b> لرصيدك وأصبحت رقم 1!`;
+                    } else if(friendScore > userScore) {
+                        html += `💪 <b>هاردلك!</b> الصديق (${friendName}) متصدر هذا الأسبوع بـ ${friendScore} نقطة.<br>📉 لم يتغير رصيدك، شد حيلك بالأذكار والصلاة لتتجاوزه الأسبوع القادم!`;
+                    } else {
+                        html += `🤝 <b>تعادل رائع!</b> كلاكما لديهما نفس النقاط (${userScore}). استمرا في المنافسة الطيبة!`;
+                    }
+
+                    resultBox.innerHTML = html;
                 } else {
-                    msgEl.innerHTML = `عذراً، الصديق <b>"${friendName}"</b> غير مسجل في السحابة حالياً.`;
-                    actionsEl.innerHTML = `<span style="color: #c0392b; font-size: 13px; font-weight: bold;">المستخدم غير موجود</span>`;
+                    resultBox.innerHTML = `عذراً، الصديق <b>"${friendName}"</b> غير مسجل في النظام حالياً.`;
                 }
             });
         }
 
-        function listenForChallenges() {
-            if(!userName) return;
-            db.ref('challenges/' + userName).on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    let data = snapshot.val();
-                    if(data.status === 'pending') {
-                        let statusArea = document.getElementById('challengeStatusArea');
-                        let msgEl = document.getElementById('challengeMsg');
-                        let actionsEl = document.getElementById('challengeActionBtns');
+        // جلب وعرض لوحة المتصدرين (Leaderboard) من Firebase
+        function loadLeaderboard() {
+            let lbContainer = document.getElementById('leaderboardContainer');
+            db.ref('users').orderByChild('score').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    let usersList = [];
+                    snapshot.forEach((childSnap) => {
+                        usersList.push(childSnap.val());
+                    });
+                    // ترتيب تصاعدي من الأكبر للأصغر حسب النقاط
+                    usersList.sort((a, b) => (b.score || 0) - (a.score || 0));
 
-                        statusArea.style.display = 'block';
-                        msgEl.innerHTML = `🔔 وصلك طلب تحدي جديد ومباشر من الصديق: <b>${data.from}</b>!`;
-                        actionsEl.innerHTML = `
-                            <button class="btn" style="background-color: #27ae60; margin:0;" onclick="respondChallenge('${data.from}', 'accepted')">قبول التحدي ✅</button>
-                            <button class="btn" style="background-color: #c0392b; margin:0;" onclick="respondChallenge('${data.from}', 'rejected')">رفض ❌</button>
+                    let html = "";
+                    usersList.forEach((u, index) => {
+                        let medal = index === 0 ? "👑 المركز الأول" : (index === 1 ? "🥈 المركز الثاني" : (index === 2 ? "🥉 المركز الثالث" : `#${index+1}`));
+                        html += `
+                            <div class="leaderboard-item">
+                                <span><b>${medal}:</b> ${u.name} (${u.city || ''})</span>
+                                <span style="color: #27ae60; font-weight: bold;">${u.score || 100} نقطة</span>
+                            </div>
                         `;
-                    }
+                    });
+                    lbContainer.innerHTML = html;
+                } else {
+                    lbContainer.innerHTML = `<p style="font-size: 13px; color: #888;">لا يوجد متصدرون مسجلون بعد.</p>`;
                 }
             });
-        }
-
-        function respondChallenge(friendName, response) {
-            let statusArea = document.getElementById('challengeStatusArea');
-            let msgEl = document.getElementById('challengeMsg');
-            let actionsEl = document.getElementById('challengeActionBtns');
-
-            if(response === 'accepted') {
-                msgEl.innerHTML = `تم قبول التحدي مع ${friendName}! بدأ التحدي الثنائي النشط 🎮🔥`;
-                actionsEl.innerHTML = `<span style="color: #27ae60; font-weight: bold;">أنت في تحدٍ نشط الآن!</span>`;
-                db.ref('challenges/' + userName).update({ status: 'accepted' });
-            } else {
-                msgEl.innerHTML = `تم رفض طلب التحدي من ${friendName}.`;
-                actionsEl.innerHTML = `<span style="color: #c0392b; font-weight: bold;">تم الرفض</span>`;
-                db.ref('challenges/' + userName).remove();
-            }
-        }
-
-        function requestNotificationPermission() {
-            if (!("Notification" in window)) return;
-            if (Notification.permission !== "granted") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        new Notification("تطبيق صلاتي", { body: "تم تفعيل الإشعارات السحابية بنجاح!" });
-                    }
-                });
-            }
-        }
-
-        function showSystemNotification(title, bodyText) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, { body: bodyText });
-            }
-        }
-
-        function checkPrayerTimesEngine() {
-            let now = new Date();
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-
-            let alertBox = document.getElementById('prayerAlertBox');
-            let noPrayerState = document.getElementById('noPrayerState');
-            let titleEl = document.getElementById('activePrayerTitle');
-
-            let activePrayerName = "";
-            if (hours === 5 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة الفجر";
-            else if (hours === 12 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة الظهر";
-            else if (hours === 15 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة العصر";
-            else if (hours === 18 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة المغرب";
-            else if (hours === 19 && minutes >= 30 && minutes <= 45) activePrayerName = "صلاة العشاء";
-
-            if (activePrayerName !== "") {
-                titleEl.innerText = `حين الصلاة: ${activePrayerName}`;
-                alertBox.style.display = 'block';
-                noPrayerState.style.display = 'none';
-
-                if (lastNotifiedPrayer !== activePrayerName) {
-                    lastNotifiedPrayer = activePrayerName;
-                    showSystemNotification("حان الآن وقت الصلاة", `حي على الصلاة، حان وقت ${activePrayerName}`);
-                }
-            } else {
-                alertBox.style.display = 'none';
-                noPrayerState.style.display = 'block';
-            }
         }
 
         function switchPage(pageName) {
@@ -716,6 +649,7 @@
             } else if (pageName === 'challenge') {
                 document.getElementById('pageChallenge').classList.add('active-page');
                 document.getElementById('tabChallenge').classList.add('active');
+                loadLeaderboard();
             }
         }
 
@@ -749,7 +683,7 @@
 
         function handlePrayerChoice(choice) {
             if(choice === 'prayed') {
-                alert("تقبل اللّٰه طاعتك! تم إضافة 10 نقاط لرصيدك");
+                alert("تقبل اللّٰه طاعتك! تم إضافة 10 نقاط لرصيدك في التحدي");
                 updateScore(10);
             } else if(choice === 'lazy') {
                 alert("تذكر قول الله تعالى: (ما سلككم في سقر...). تم خصم 20 نقطة.");
@@ -762,7 +696,7 @@
         }
 
         function completeDhikr() {
-            alert("تقبل الله طاعتك! تم إتمام أذكارك بنجاح وإضافة 5 نقاط لرصيدك");
+            alert("تقبل الله طاعتك! تم إتمام أذكارك وإضافة 5 نقاط لرصيدك");
             updateScore(5);
         }
 
@@ -773,8 +707,8 @@
             localStorage.setItem('savedQuranPage', pageNum);
 
             document.getElementById('pageNumberInput').value = pageNum;
-            document.getElementById('quranTextContent').innerText = "جاري تحميل الصفحة...";
-            document.getElementById('quranInfoBar').innerText = "جاري تحميل بيانات الصفحة...";
+            document.getElementById('quranTextContent').innerText = "جاري التحميل...";
+            document.getElementById('quranInfoBar').innerText = "جاري التحميل...";
 
             try {
                 let res = await fetch(`https://api.alquran.cloud/v1/page/${pageNum}/quran-uthmani`);
@@ -788,30 +722,20 @@
                 document.getElementById('fsBarInfo').innerHTML = `صفحة ${pageNum} (جزء ${currentJuz})`;
 
                 let htmlText = "";
-                
                 ayahs.forEach(ayah => {
                     let text = ayah.text;
-                    
                     if (ayah.numberInSurah === 1) {
                         text = text.replace(/^بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\s*/g, "")
-                                   .replace(/^بسم الله الرحمن الرحيم\s*/g, "")
-                                   .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
-                                   .replace(/بسم الله الرحمن الرحيم/g, "").trim();
+                                   .replace(/^بسم الله الرحمن الرحيم\s*/g, "").trim();
                     }
-
                     if (ayah.numberInSurah === 1 && ayah.surah.number !== 9) {
-                        htmlText += `
-                            <div class="surah-banner">${ayah.surah.name}</div>
-                            <div class="basmalah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-                        `;
+                        htmlText += `<div class="surah-banner">${ayah.surah.name}</div><div class="basmalah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
                     }
-
                     htmlText += `${text} ۝<span style="font-size: 15px; color: #16a085; margin: 0 4px;">(${ayah.numberInSurah})</span> `;
                 });
-
                 document.getElementById('quranTextContent').innerHTML = htmlText;
             } catch (err) {
-                document.getElementById('quranTextContent').innerText = "حدث خطأ في تحميل الصفحة، تأكد من اتصال الإنترنت.";
+                document.getElementById('quranTextContent').innerText = "حدث خطأ في الاتصال بالإنترنت.";
             }
         }
 
@@ -821,44 +745,29 @@
         }
 
         function nextPage() {
-            if(currentPageNumber < 604) {
-                loadPage(currentPageNumber + 1);
-                document.getElementById('quranDisplay').scrollTop = 0;
-            } else {
-                alert("هذه هي الصفحة الأخيرة في القرآن الكريم.");
-            }
+            if(currentPageNumber < 604) { loadPage(currentPageNumber + 1); document.getElementById('quranDisplay').scrollTop = 0; }
         }
 
         function prevPage() {
-            if(currentPageNumber > 1) {
-                loadPage(currentPageNumber - 1);
-                document.getElementById('quranDisplay').scrollTop = 0;
-            } else {
-                alert("هذه هي الصفحة الأولى في القرآن الكريم.");
-            }
+            if(currentPageNumber > 1) { loadPage(currentPageNumber - 1); document.getElementById('quranDisplay').scrollTop = 0; }
         }
 
         function toggleQuranFullscreen() {
             let quranBox = document.getElementById('quranDisplay');
             let btn = document.getElementById('fullscreenQuranBtn');
             quranBox.classList.toggle('fullscreen-quran');
-            
-            if(quranBox.classList.contains('fullscreen-quran')) {
-                btn.innerText = "تصغير المصحف";
-            } else {
-                btn.innerText = "تكبير المصحف للشاشة";
-            }
+            btn.innerText = quranBox.classList.contains('fullscreen-quran') ? "تصغير المصحف" : "تكبير المصحف للشاشة";
         }
 
         function saveBookmark() {
             localStorage.setItem('userBookmarkPage', currentPageNumber);
-            alert("تم حفظ صفحة قراءتك الحالية بنجاح!");
+            alert("تم حفظ صفحة قراءتك!");
         }
 
         function goToBookmark() {
             let bookmark = localStorage.getItem('userBookmarkPage') || 1;
             loadPage(parseInt(bookmark));
-            alert("تم إرجاعك إلى صفحتك المحفوظة!");
+            alert("تم إرجاعك لصفحتك المحفوظة!");
         }
 
         window.onload = function() {
@@ -881,27 +790,21 @@
 
                 document.getElementById('currentUserName').innerText = savedName;
                 document.getElementById('currentLocDisplay').innerText = `${savedCity}، ${savedCountry}`;
-                
                 document.getElementById('updateName').value = savedName;
                 document.getElementById('updateCity').value = savedCity;
                 document.getElementById('updateCountry').value = savedCountry;
 
                 document.getElementById('welcomeModal').style.display = 'none';
-                listenForChallenges();
+                loadLeaderboard();
             } else {
                 document.getElementById('welcomeModal').style.display = 'flex';
             }
 
             let lastPage = localStorage.getItem('savedQuranPage');
-            if(lastPage) {
-                currentPageNumber = parseInt(lastPage);
-            }
+            if(lastPage) currentPageNumber = parseInt(lastPage);
             loadPage(currentPageNumber);
-
-            checkPrayerTimesEngine();
-            setInterval(checkPrayerTimesEngine, 60000);
+            loadLeaderboard();
         }
     </script>
-
 </body>
 </html>
