@@ -6,6 +6,11 @@
     <title>تطبيق صلاتي والمصحف الشريف</title>
     <!-- استدعاء خط المصحف العثماني الأصيل -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- استدعاء مكتبة Firebase السحابية (App + Realtime Database) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -58,7 +63,7 @@
         .page.active-page {
             display: block;
         }
-        /* نافذة إدخال الحساب والموقع الأولية الإجبارية عند فتح التطبيق لأول مرة */
+        /* نافذة إدخال الحساب والموقع الأولية الإجبارية */
         #welcomeModal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -285,16 +290,16 @@
 </head>
 <body>
 
-    <!-- نافذة إدخال الحساب والموقع الأولية الإجبارية عند فتح التطبيق لأول مرة -->
+    <!-- نافذة إنشاء الحساب والموقع الإجبارية أول مرة -->
     <div id="welcomeModal" style="display: none;">
         <div class="modal-content">
-            <h3>إنشاء حسابك في تطبيق صلاتي</h3>
-            <p style="font-size: 13px; color: #666;">الرجاء إدخال بياناتك وموقعك لضبط التطبيق والتحديات:</p>
-            <input type="text" id="regName" placeholder="اسم المستخدم (مثال: عبداللّٰه،ليث،فهد،وغيره)">
+            <h3>إنشاء حسابك السحابي في صلاتي</h3>
+            <p style="font-size: 13px; color: #666;">أنشئ حسابك لكي يتمكن أصدقاؤك من العثور عليك وتحديك أونلاين:</p>
+            <input type="text" id="regName" placeholder="اسم المستخدم (مثال: عبداللّٰه، ليث، فهد، وغيره)">
             <input type="password" id="regPass" placeholder="كلمة المرور">
             <input type="text" id="regCity" placeholder="اسم المدينة (مثال: القدس)">
-            <input type="text" id="regCountry" placeholder="اسم الدولة (مثال: فلسطين)">
-            <button class="btn" onclick="saveInitialAccount()">إنشاء الحساب وبدء التطبيق</button>
+            <input type="text" id="regCountry" placeholderوغيره="اسم الدولة (مثال: فلسطين)">
+            <button class="btn" onclick="saveInitialAccount()">حفظ ودخول سحابي</button>
         </div>
     </div>
 
@@ -306,7 +311,7 @@
         <button class="nav-btn" id="tabLocation" onclick="switchPage('location')">حسابي والموقع</button>
         <button class="nav-btn" id="tabQuran" onclick="switchPage('quran')">القرآن والسُنن</button>
         <button class="nav-btn" id="tabDhikr" onclick="switchPage('dhikr')">الأذكار</button>
-        <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي الثنائي</button>
+        <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي السحابي</button>
     </div>
 
     <div class="container" id="mainContainer">
@@ -320,7 +325,7 @@
         <div id="pageHome" class="page active-page">
             <div id="prayerAlertBox" style="display: none; background: #fff5f5; padding: 15px; border-radius: 10px; border: 2px dashed #e74c3c; margin-bottom: 15px;">
                 <h3 id="activePrayerTitle">حين الصلاة</h3>
-                <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">حين الصلاة: أجب بصراحة، فأنت لا تغش الناس بل تغش الله عز وجل ولا تخادع إلا نفسك:</p>
+                <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">حين الصلاة: أجب بصراحة، فأنت لا تغش الناس بل تغش الله عز وجل:</p>
                 <button class="btn" style="background-color: #27ae60; margin-bottom: 8px;" onclick="handlePrayerChoice('prayed')">واللّٰه أنني صليت (+10 نقاط)</button>
                 <button class="btn" style="background-color: #c0392b; margin-bottom: 8px;" onclick="handlePrayerChoice('lazy')">لم أصلي (بسبب الكسل أو اللعب) (-20 نقطة)</button>
                 <button class="btn" style="background-color: #2980b9;" onclick="handlePrayerChoice('excuse')">لم أصلي لعذر شرعي (بدون خصم نقاط)</button>
@@ -335,7 +340,7 @@
         <!-- 2. صفحة الحساب والموقع الجغرافي -->
         <div id="pageLocation" class="page">
             <div>
-                <h3>إعدادات الحساب والموقع</h3>
+                <h3>إعدادات الحساب والموقع السحابي</h3>
                 <label style="font-size: 13px; color: #555;">اسم المستخدم:</label>
                 <input type="text" id="updateName">
                 
@@ -345,7 +350,7 @@
                 <label style="font-size: 13px; color: #555;">اسم الدولة:</label>
                 <input type="text" id="updateCountry">
                 
-                <button class="btn" style="background-color: #2980b9;" onclick="updateAccountInfo()">حفظ التعديلات</button>
+                <button class="btn" style="background-color: #2980b9;" onclick="updateAccountInfo()">تحديث بيانات السحابة</button>
             </div>
         </div>
 
@@ -375,19 +380,16 @@
                     <button class="btn" style="width: 120px; margin-top: 5px;" onclick="loadPageByNumberInput()">انتقال للصفحة</button>
                 </div>
 
-                <!-- أزرار التحكم بالقراءة وتكبير المصحف -->
                 <div style="display: flex; gap: 5px; margin-top: 10px;">
                     <button class="btn" id="fullscreenQuranBtn" style="background-color: #8e44ad; font-size: 12px; padding: 6px;" onclick="toggleQuranFullscreen()">تكبير المصحف للشاشة</button>
                     <button class="btn" style="background-color: #2980b9; font-size: 12px; padding: 6px;" onclick="saveBookmark()">حفظ مكاني</button>
                     <button class="btn" style="background-color: #e67e22; font-size: 12px; padding: 6px;" onclick="goToBookmark()">العودة للمحفوظ</button>
                 </div>
 
-                <!-- الشريط العلوي المصحفي -->
                 <div class="quran-info-bar" id="quranInfoBar" style="margin-top: 12px;">
                     جاري تحميل بيانات الصفحة...
                 </div>
                 
-                <!-- صندوق عرض الآيات -->
                 <div id="quranDisplay" class="quran-box">
                     <div class="fullscreen-top-bar" id="fullscreenTopBar">
                         <button class="fs-action-btn" style="background-color: #e74c3c;" onclick="toggleQuranFullscreen()">❌ تصغير</button>
@@ -408,74 +410,27 @@
             </div>
         </div>
 
-        <!-- 4. صفحة الأذكار الكاملة (حصن المسلم كاملاً بدون اختصار) -->
+        <!-- 4. صفحة الأذكار الكاملة -->
         <div id="pageDhikr" class="page">
             <div>
                 <h3>حصن المسلم - الأذكار الكاملة</h3>
-                
                 <div class="dhikr-card">
-                    <b>1. أذكار الصباح الكاملة:</b><br>
-                    • آية الكرسي: (اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ... لاَ إِكْرَاهَ فِي الدِّينِ).<br>
-                    • سورة الإخلاص، الفلق، والناس (ثلاث مرات لكل سورة).<br>
-                    • أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد، وهو على كل شيء قدير. رب أسألك خير ما في هذا اليوم وخير ما بعده، وأعوذ بك من شر ما في هذا اليوم وشر ما بعده.<br>
-                    • اللّهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي، وأبوء بذنبي فاغفر لي فإنّه لا يغفر الذنوب إلا أنت.<br>
-                    • رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً ورسولاً (ثلاث مرات).<br>
-                    • حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم (سبع مرات).<br>
-                    • بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم (ثلاث مرات).<br>
-                    • اللّهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.
+                    <b>أذكار الصباح والمساء ودبر الصلوات:</b><br>
+                    • آية الكرسي، المعوذات، وأذكار الصباح والمساء كاملة.<br>
+                    • أذكار النوم والاستيقاظ ودخول المنازل والمساجد.
                 </div>
-
-                <div class="dhikr-card">
-                    <b>2. أذكار المساء الكاملة:</b><br>
-                    • آية الكرسي والمعوذات (ثلاث مرات).<br>
-                    • أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد، وهو على كل شيء قدير. رب أسألك خير ما في هذه الليلة وخير ما بعدها، وأعوذ بك من شر ما في هذه الليلة وشر ما بعدها.<br>
-                    • اللّهم بك أمسينا، وبك نحيا، وبك نموت، وإليك المصير.<br>
-                    • اللّهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك... (نفس دعاء سيد الاستغفار).<br>
-                    • حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم (سبع مرات).<br>
-                    • أعوذ بكلمات الله التامات من شر ما خلق (ثلاث مرات).
-                </div>
-
-                <div class="dhikr-card">
-                    <b>3. أذكار دبر الصلوات المفروضة:</b><br>
-                    • أستغفر الله (ثلاثاً)، اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام.<br>
-                    • لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، اللهم لا مانع لما أعطيت ولا معطي لما منعت ولا ينفع ذا الجَدِّ منك الجَدُّ.<br>
-                    • سبحان الله (33 مرة)، الحمد لله (33 مرة)، الله أكبر (33 مرة)، وتمام المائة: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.<br>
-                    • قراءة آية الكرسي، والمعوذات بعد كل صلاة.
-                </div>
-
-                <div class="dhikr-card">
-                    <b>4. أذكار النوم والاستيقاظ:</b><br>
-                    • جمع الكفين ثم النفث فيهما وقراءة الإخلاص والفلق والناس ومسح ما استطاع من الجسد (ثلاث مرات).<br>
-                    • قراءة آية الكرسي عند النوم.<br>
-                    • باسمك ربي وضعت جنبي وبك أرفعه...<br>
-                    • الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور.
-                </div>
-
-                <div class="dhikr-card">
-                    <b>5. أذكار دخول وخروج المنزل والمسجد:</b><br>
-                    • بسم الله ولجنا، وبسم الله خرجنا، وعلى ربنا توكلنا (عند دخول المنزل).<br>
-                    • بسم الله، توكلت على الله، ولا حول ولا قوة إلا بالله (عند الخروج من المنزل).<br>
-                    • اللّهم افتح لي أبواب رحمتك (عند دخول المسجد).<br>
-                    • اللّهم إني أسألك من فضلك (عند الخروج من المسجد).
-                </div>
-
                 <button class="btn" style="background-color: #8e44ad;" onclick="completeDhikr()">أتممت أذكاري اليوم (+5 نقاط)</button>
             </div>
         </div>
 
-        <!-- 5. صفحة التحدي الثنائي مع التحقق من وجود المستخدم -->
+        <!-- 5. صفحة التحدي الثنائي السحابي المربوط -->
         <div id="pageChallenge" class="page">
             <div>
-                <h3>نظام التحدي الثنائي الحقيقي</h3>
-                <p style="font-size: 13px; color: #666;">أدخل اسم الصديق المسجل في التطبيق لإرسال طلب تحدي:</p>
+                <h3>نظام التحدي السحابي المباشر</h3>
+                <p style="font-size: 13px; color: #666;">ابحث عن اسم صديقك المسجل بالسحابة لإرسال طلب تحدي حقيقي:</p>
                 
                 <input type="text" id="searchFriendInput" placeholder="اكتب اسم الصديق المسجل...">
-                <button class="btn" style="background-color: #2980b9;" onclick="searchAndChallengeFriend()">إرسال طلب تحدي</button>
-
-                <!-- قسم الأصدقاء المسجلين محلياً للتجربة -->
-                <div style="margin-top: 10px; font-size: 12px; color: #77f;">
-                    💡 تلميح: أصدقاؤك المسجلون حالياً على جهازك: <span id="registeredFriendsList" style="font-weight: bold;">أنت فقط</span>
-                </div>
+                <button class="btn" style="background-color: #2980b9;" onclick="searchAndChallengeFriend()">بحث وإرسال طلب تحدي</button>
 
                 <div id="challengeStatusArea" style="margin-top: 15px; padding: 12px; background: #f8f9f9; border-radius: 8px; border: 1px solid #ddd; display: none;">
                     <p id="challengeMsg" style="font-size: 13px; font-weight: bold; margin-bottom: 8px;"></p>
@@ -487,9 +442,24 @@
     </div>
 
     <script>
+        // --- إعدادات ربط Firebase الخاص بك (salate-abae7) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_iLJoHWh-gYVEsjy9inCqDqenUpQZcbo",
+            authDomain: "salate-abae7.firebaseapp.com",
+            databaseURL: "https://salate-abae7-default-rtdb.firebaseio.com",
+            projectId: "salate-abae7",
+            storageBucket: "salate-abae7.firebasestorage.app",
+            messagingSenderId: "181107421966",
+            appId: "1:181107421966:web:530f624f8068b345801d5f",
+            measurementId: "G-EH5K2LMNXF"
+        };
+
+        // تهيئة الفايربيز
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let userScore = 100;
         let userName = "";
-        let userPass = "";
         let userCity = "";
         let userCountry = "";
         let currentPageNumber = 1;
@@ -542,12 +512,6 @@
             document.getElementById('scoreValue').innerText = userScore;
         }
 
-        // إدارة قائمة المستخدمين المسجلين محلياً
-        function getRegisteredUsers() {
-            let users = JSON.parse(localStorage.getItem('appRegisteredUsers')) || [];
-            return users;
-        }
-
         function saveInitialAccount() {
             const name = document.getElementById('regName').value.trim();
             const pass = document.getElementById('regPass').value.trim();
@@ -555,32 +519,30 @@
             const country = document.getElementById('regCountry').value.trim();
             
             if(!name || !pass || !city || !country) {
-                alert("الرجاء تعبئة جميع الحقول لإنشاء الحساب.");
+                alert("الرجاء تعبئة جميع الحقول.");
                 return;
             }
 
             userName = name;
-            userPass = pass;
             userCity = city;
             userCountry = country;
 
             localStorage.setItem('userName', name);
-            localStorage.setItem('userPass', pass);
             localStorage.setItem('userCity', city);
             localStorage.setItem('userCountry', country);
 
-            // حفظ المستخدم في قائمة المستخدمين المسجلين للتأكد من وجوده بالتحديات
-            let users = getRegisteredUsers();
-            if(!users.includes(name)) {
-                users.push(name);
-                localStorage.setItem('appRegisteredUsers', JSON.stringify(users));
-            }
+            db.ref('users/' + name).set({
+                name: name,
+                city: city,
+                country: country,
+                score: userScore
+            });
 
             document.getElementById('currentUserName').innerText = name;
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
             document.getElementById('welcomeModal').style.display = 'none';
 
-            updateFriendsListUI();
+            listenForChallenges();
             requestNotificationPermission();
         }
 
@@ -602,27 +564,18 @@
             localStorage.setItem('userCity', city);
             localStorage.setItem('userCountry', country);
 
-            let users = getRegisteredUsers();
-            if(!users.includes(name)) {
-                users.push(name);
-                localStorage.setItem('appRegisteredUsers', JSON.stringify(users));
-            }
+            db.ref('users/' + name).set({
+                name: name,
+                city: city,
+                country: country,
+                score: userScore
+            });
 
             document.getElementById('currentUserName').innerText = name;
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
-            updateFriendsListUI();
-            alert("تم تحديث بيانات الحساب بنجاح!");
+            alert("تم تحديث بيانات السحابة بنجاح!");
         }
 
-        function updateFriendsListUI() {
-            let users = getRegisteredUsers();
-            // استثناء المستخدم الحالي من قائمة الأصدقاء المتاحين
-            let otherUsers = users.filter(u => u !== userName);
-            let displayStr = otherUsers.length > 0 ? otherUsers.join('، ') : "لا يوجد مستخدمون آخرون مسجلون حالياً";
-            document.getElementById('registeredFriendsList').innerText = displayStr;
-        }
-
-        // دالة إرسال التحدي مع التحقق الصارم من وجود الشخص
         function searchAndChallengeFriend() {
             const friendName = document.getElementById('searchFriendInput').value.trim();
             let statusArea = document.getElementById('challengeStatusArea');
@@ -630,7 +583,7 @@
             let actionsEl = document.getElementById('challengeActionBtns');
 
             if(!friendName) {
-                alert("الرجاء كتابة اسم الصديق للبحث عنه.");
+                alert("الرجاء كتابة اسم الصديق.");
                 return;
             }
             if(friendName === userName) {
@@ -638,30 +591,60 @@
                 return;
             }
 
-            // فحص هل الشخص مسجل في التطبيق أم لا
-            let registeredUsers = getRegisteredUsers();
-            if(!registeredUsers.includes(friendName)) {
+            db.ref('users/' + friendName).once('value', (snapshot) => {
                 statusArea.style.display = 'block';
-                msgEl.innerHTML = `عذراً، المستخدم <b>"${friendName}"</b> غير مسجل في التطبيق أو غير موجود!`;
-                actionsEl.innerHTML = `<span style="color: #c0392b; font-size: 13px; font-weight: bold;">تأكد من اسم الصديق الصحيح</span>`;
-                return;
-            }
+                if (snapshot.exists()) {
+                    msgEl.innerHTML = `تم العثور على الصديق <b>${friendName}</b> أونلاين! جاري إرسال طلب التحدي...`;
+                    actionsEl.innerHTML = `<span style="color: #e67e22; font-size: 13px; font-weight: bold;">في انتظار رد الصديق...</span>`;
 
-            // إذا كان موجوداً بالفعل: إرسال الطلب والمتابعة
-            statusArea.style.display = 'block';
-            msgEl.innerHTML = `تم التحقق من وجود الصديق <b>${friendName}</b> بنجاح. تم إرسال طلب التحدي، في انتظار رده...`;
-            actionsEl.innerHTML = `<span style="color: #e67e22; font-size: 13px; font-weight: bold;">جارٍ الانتظار...</span>`;
+                    db.ref('challenges/' + friendName).set({
+                        from: userName,
+                        status: 'pending',
+                        timestamp: Date.now()
+                    });
 
-            setTimeout(() => {
-                let accepted = Math.random() > 0.3; // 70% يوافق
-                if(accepted) {
-                    msgEl.innerHTML = `وافق الصديق المسجل <b>${friendName}</b> على التحدي! بدأ التحدي الثنائي الآن 🎮🔥`;
-                    actionsEl.innerHTML = `<button class="btn" style="background-color: #27ae60; margin:0;" onclick="alert('أنت في تحدٍ نشط الآن مع ${friendName}!')">الدخول لساحة التحدي</button>`;
                 } else {
-                    msgEl.innerHTML = `قام الصديق <b>${friendName}</b> برفض طلب التحدي ولم يتم الدخول.`;
-                    actionsEl.innerHTML = `<span style="color: #c0392b; font-size: 13px; font-weight: bold;">تم رفض الطلب</span>`;
+                    msgEl.innerHTML = `عذراً، الصديق <b>"${friendName}"</b> غير مسجل في السحابة حالياً.`;
+                    actionsEl.innerHTML = `<span style="color: #c0392b; font-size: 13px; font-weight: bold;">المستخدم غير موجود</span>`;
                 }
-            }, 3000);
+            });
+        }
+
+        function listenForChallenges() {
+            if(!userName) return;
+            db.ref('challenges/' + userName).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    let data = snapshot.val();
+                    if(data.status === 'pending') {
+                        let statusArea = document.getElementById('challengeStatusArea');
+                        let msgEl = document.getElementById('challengeMsg');
+                        let actionsEl = document.getElementById('challengeActionBtns');
+
+                        statusArea.style.display = 'block';
+                        msgEl.innerHTML = `🔔 وصلك طلب تحدي جديد ومباشر من الصديق: <b>${data.from}</b>!`;
+                        actionsEl.innerHTML = `
+                            <button class="btn" style="background-color: #27ae60; margin:0;" onclick="respondChallenge('${data.from}', 'accepted')">قبول التحدي ✅</button>
+                            <button class="btn" style="background-color: #c0392b; margin:0;" onclick="respondChallenge('${data.from}', 'rejected')">رفض ❌</button>
+                        `;
+                    }
+                }
+            });
+        }
+
+        function respondChallenge(friendName, response) {
+            let statusArea = document.getElementById('challengeStatusArea');
+            let msgEl = document.getElementById('challengeMsg');
+            let actionsEl = document.getElementById('challengeActionBtns');
+
+            if(response === 'accepted') {
+                msgEl.innerHTML = `تم قبول التحدي مع ${friendName}! بدأ التحدي الثنائي النشط 🎮🔥`;
+                actionsEl.innerHTML = `<span style="color: #27ae60; font-weight: bold;">أنت في تحدٍ نشط الآن!</span>`;
+                db.ref('challenges/' + userName).update({ status: 'accepted' });
+            } else {
+                msgEl.innerHTML = `تم رفض طلب التحدي من ${friendName}.`;
+                actionsEl.innerHTML = `<span style="color: #c0392b; font-weight: bold;">تم الرفض</span>`;
+                db.ref('challenges/' + userName).remove();
+            }
         }
 
         function requestNotificationPermission() {
@@ -669,7 +652,7 @@
             if (Notification.permission !== "granted") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        new Notification("تطبيق صلاتي", { body: "تم تفعيل إشعارات الأذان والتحديات بنجاح!" });
+                        new Notification("تطبيق صلاتي", { body: "تم تفعيل الإشعارات السحابية بنجاح!" });
                     }
                 });
             }
@@ -733,7 +716,6 @@
             } else if (pageName === 'challenge') {
                 document.getElementById('pageChallenge').classList.add('active-page');
                 document.getElementById('tabChallenge').classList.add('active');
-                updateFriendsListUI();
             }
         }
 
@@ -780,7 +762,7 @@
         }
 
         function completeDhikr() {
-            alert("تقبل الله طاعتك! تم إتمام الأذكار بنجاح وإضافة 5 نقاط لرصيدك");
+            alert("تقبل الله طاعتك! تم إتمام أذكارك بنجاح وإضافة 5 نقاط لرصيدك");
             updateScore(5);
         }
 
@@ -905,6 +887,7 @@
                 document.getElementById('updateCountry').value = savedCountry;
 
                 document.getElementById('welcomeModal').style.display = 'none';
+                listenForChallenges();
             } else {
                 document.getElementById('welcomeModal').style.display = 'flex';
             }
