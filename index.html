@@ -311,13 +311,20 @@
 
         <!-- 1. الصفحة الرئيسية -->
         <div id="pageHome" class="page active-page">
-            <div style="background: #fff5f5; padding: 15px; border-radius: 10px; border: 2px dashed #e74c3c;">
-                <h3>تنبيه الصلاة (محاكاة الأذان والإشعارات)</h3>
-                <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">أجب بصراحة، فانت لا تغش الناس بل تغش الله عز وجل ولا تخادع إلا نفسك:</p>
-                
+            <!-- صندوق تنبيه الصلاة التلقائي (لا يظهر إلا عند دخول وقت الصلاة حصراً) -->
+            <div id="prayerAlertBox" style="display: none; background: #fff5f5; padding: 15px; border-radius: 10px; border: 2px dashed #e74c3c; margin-bottom: 15px;">
+                <h3 id="activePrayerTitle">حين الصلاة</h3>
+                <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">حين الصلاة: أجب بصراحة، فأنت لا تغش الناس بل تغش الله عز وجل ولا تخادع إلا نفسك:</p>
                 <button class="btn" style="background-color: #27ae60; margin-bottom: 8px;" onclick="handlePrayerChoice('prayed')">واللّٰه أنني صليت (+10 نقاط)</button>
                 <button class="btn" style="background-color: #c0392b; margin-bottom: 8px;" onclick="handlePrayerChoice('lazy')">لم أصلي (بسبب الكسل أو اللعب) (-20 نقطة)</button>
                 <button class="btn" style="background-color: #2980b9;" onclick="handlePrayerChoice('excuse')">لم أصلي لعذر شرعي (بدون خصم نقاط)</button>
+            </div>
+
+
+            <!-- الحالة الطبيعية في غير أوقات الصلاة (لا توجد لوحة مزعجة) -->
+            <div id="noPrayerState" style="text-align: center; padding: 30px 10px; color: #555;">
+                <h3 style="color: #16a085;">الحمد لله على كل حال</h3>
+                <p style="font-size: 14px;">ليس وقت صلاة حالياً. سيظهر لك تنبيه الصلاة تلقائياً وفوراً عند دخول وقت الصلاة بمشيئة الله.</p>
             </div>
         </div>
 
@@ -572,6 +579,45 @@
         }
 
 
+        // دالة تفقد وقت الصلاة الحقيقي (محاكاة دقيقة بناءً على الساعات)
+        function checkPrayerTimesEngine() {
+            let now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let timeStr = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+
+            let alertBox = document.getElementById('prayerAlertBox');
+            let noPrayerState = document.getElementById('noPrayerState');
+            let titleEl = document.getElementById('activePrayerTitle');
+
+
+            // أوقات تجريبية تقريبية يمكن ضبطها أو تركها تفحص حسب الساعة (الفجر، الظهر، العصر، المغرب، العشاء)
+            // لتجربة ظهور اللوحة الفورية، يمكنك تغيير هذه الأوقات أو جعلها تطابق وقتك الحالي
+            let activePrayerName = "";
+            
+            if (hours === 5 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة الفجر";
+            else if (hours === 12 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة الظهر";
+            else if (hours === 15 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة العصر";
+            else if (hours === 18 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة المغرب";
+            else if (hours === 19 && minutes >= 30 && minutes <= 45) activePrayerName = "صلاة العشاء";
+
+
+            // للتجربة والاستعراض الفوري بدون انتظار الوقت، يمكنك إزالة تعليق السطر أدناه:
+            // activePrayerName = "صلاة الظهر (تجريبي)";
+
+
+            if (activePrayerName !== "") {
+                titleEl.innerText = `حين الصلاة: ${activePrayerName}`;
+                alertBox.style.display = 'block';
+                noPrayerState.style.display = 'none';
+            } else {
+                alertBox.style.display = 'none';
+                noPrayerState.style.display = 'block';
+            }
+        }
+
+
         function switchPage(pageName) {
             const pages = ['pageHome', 'pageLocation', 'pageQuran', 'pageDhikr', 'pageChallenge'];
             const tabs = ['tabHome', 'tabLocation', 'tabQuran', 'tabDhikr', 'tabChallenge'];
@@ -634,11 +680,14 @@
                 alert("تقبل اللّٰه طاعتك! تم إضافة 10 نقاط لرصيدك");
                 updateScore(10);
             } else if(choice === 'lazy') {
-                alert("تذكر قول الله تعالى: (ما سلككم في سقر قالوا لم نك من المصلين ولم نك نطعم المسكين وكنا نخوض مع الخائضين).\nتقصير واضح بسبب اللعب أو الكسل! تم خصم 20 نقطة من رصيدك.");
+                alert("تذكر قول الله تعالى: (ما سلككم في سقر قالوا لم نك من المصلين ولم نك نطعم المسكين وكنا نخوض مع الخائضين).\nتقصير واضح! تم خصم 20 نقطة من رصيدك.");
                 updateScore(-20);
             } else if(choice === 'excuse') {
-                alert("تم قبول عذرك الشرعي نظراً لأنه ظرف حقيقي خارج عن إرادتك. لن تُخصم نقاطك.");
+                alert("تم قبول عذرك الشرعي.");
             }
+            // إخفاء تنبيه الصلاة بعد الإجابة حتى الصلاة القادمة
+            document.getElementById('prayerAlertBox').style.display = 'none';
+            document.getElementById('noPrayerState').style.display = 'block';
         }
 
 
@@ -789,6 +838,7 @@
             populateSurahDropdown(localSurahsList);
 
 
+            // استرجاع النقاط المحفوظة
             let savedScore = localStorage.getItem('userScore');
             if(savedScore) {
                 userScore = parseInt(savedScore);
@@ -796,6 +846,7 @@
             }
 
 
+            // استرجاع الموقع المحفوظ
             let savedCity = localStorage.getItem('userCity');
             let savedCountry = localStorage.getItem('userCountry');
             if(savedCity && savedCountry) {
@@ -808,9 +859,13 @@
             }
 
 
+            // استرجاع آخر صفحة قرآن تم قراءتها
             let lastPage = localStorage.getItem('savedQuranPage');
             if(lastPage) {
                 currentPageNumber = parseInt(lastPage);
             }
             loadPage(currentPageNumber);
+
+
+            // فحص أوقات الص
 
