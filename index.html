@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق صلاتي والمصحف الشريف - النسخة النهائية المكتملة</title>
+    <title>تطبيق صلاتي والمصحف الشريف</title>
     <!-- استدعاء خط المصحف العثماني الأصيل -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -204,7 +204,7 @@
             font-size: 30px !important;
         }
         
-        /* إظهار الشريط بقلب الشاشة المكبرة وثبته بأعلى الشاشة بشكل ممتاز */
+        /* إظهار الشريط بقلب الشاشة المكبرة وثبته بأعلى الشاشة بشكل ممتاز مع أزراره */
         .quran-box.fullscreen-quran .fullscreen-top-bar {
             display: flex !important;
             position: fixed;
@@ -281,8 +281,8 @@
         <div class="modal-content">
             <h3>أهلاً بك في تطبيق صلاتي</h3>
             <p style="font-size: 13px; color: #666;">الرجاء تحديد منطقتك لضبط مواقيت الصلاة وتفعيل إشعارات الأذان:</p>
-            <input type="text" id="initCity" value="القدس" placeholder="مثال: القدس أو جنين">
-            <input type="text" id="initCountry" value="فلسطين" placeholder="مثال: فلسطين">
+            <input type="text" id="initCity" placeholder="أدخل اسم المدينة (مثل: جنين)">
+            <input type="text" id="initCountry" placeholder="أدخل اسم الدولة (مثل: فلسطين)">
             <button class="btn" onclick="saveInitialLocation()">حفظ الموقع وبدء التطبيق</button>
         </div>
     </div>
@@ -327,10 +327,10 @@
             <div>
                 <h3>إعدادات الموقع الجغرافي والإشعارات</h3>
                 <label style="font-size: 13px; color: #555;">اسم المدينة:</label>
-                <input type="text" id="updateCity" placeholder="مثال: القدس أو جنين">
+                <input type="text" id="updateCity" placeholder="أدخل اسم المدينة">
                 
                 <label style="font-size: 13px; color: #555;">اسم الدولة:</label>
-                <input type="text" id="updateCountry" placeholder="مثال: فلسطين">
+                <input type="text" id="updateCountry" placeholder="أدخل اسم الدولة">
                 
                 <button class="btn" style="background-color: #2980b9;" onclick="updateLocation()">تحديث الموقع وتفعيل الإشعارات</button>
             </div>
@@ -353,7 +353,7 @@
 
 
                 <h3>البحث السريع واختيار السور</h3>
-                <input type="text" id="surahSearchInput" placeholder="اكتب اسم السورة (مثل: المائدة، البقرة...)" oninput="filterSurahsList()">
+                <input type="text" id="surahSearchInput" placeholder="اكتب اسم السورة للبحث..." oninput="filterSurahsList()">
                 
                 <select id="surahDropdownSelect" onchange="onSurahDropdownChange()" style="margin-top: 5px;">
                     <option value="">-- اختر السورة مباشرة من القائمة --</option>
@@ -520,8 +520,15 @@
 
 
         function saveInitialLocation() {
-            const city = document.getElementById('initCity').value.trim() || "القدس";
-            const country = document.getElementById('initCountry').value.trim() || "فلسطين";
+            const city = document.getElementById('initCity').value.trim();
+            const country = document.getElementById('initCountry').value.trim();
+            
+            if(!city || !country) {
+                alert("الرجاء إدخال اسم المدينة والدولة للمتابعة.");
+                return;
+            }
+
+
             userCity = city;
             userCountry = country;
             localStorage.setItem('userCity', city);
@@ -535,8 +542,15 @@
 
 
         function updateLocation() {
-            const city = document.getElementById('updateCity').value.trim() || "القدس";
-            const country = document.getElementById('updateCountry').value.trim() || "فلسطين";
+            const city = document.getElementById('updateCity').value.trim();
+            const country = document.getElementById('updateCountry').value.trim();
+            
+            if(!city || !country) {
+                alert("الرجاء إدخال الحقول بشكل صحيح.");
+                return;
+            }
+
+
             userCity = city;
             userCountry = country;
             localStorage.setItem('userCity', city);
@@ -799,10 +813,4 @@
                 currentPageNumber = parseInt(lastPage);
             }
             loadPage(currentPageNumber);
-        }
-    </script>
-
-
-</body>
-</html>
 
