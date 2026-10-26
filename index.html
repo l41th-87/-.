@@ -455,6 +455,7 @@
         let userCity = "";
         let userCountry = "";
         let currentPageNumber = 1;
+        let lastNotifiedPrayer = "";
 
         const localSurahsList = [
             {number: 1, name: "الفاتحة", page: 1}, {number: 2, name: "البقرة", page: 2}, {number: 3, name: "آل عمران", page: 50},
@@ -519,7 +520,7 @@
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
             document.getElementById('welcomeModal').style.display = 'none';
 
-            requestRealNotification(city, country);
+            requestNotificationPermission();
         }
 
         function updateLocation() {
@@ -537,17 +538,30 @@
             localStorage.setItem('userCountry', country);
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
             
-            requestRealNotification(city, country);
+            requestNotificationPermission();
             alert(`تم تحديث الموقع بنجاح إلى (${city}، ${country}) وتفعيل الإشعارات.`);
         }
 
-        function requestRealNotification(city, country) {
+        // طلب إذن إرسال الإشعارات من المتصفح
+        function requestNotificationPermission() {
             if (!("Notification" in window)) return;
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    new Notification("تطبيق صلاتي", { body: `تم تفعيل إشعارات الأذان في ${city}، ${country}` });
-                }
-            });
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        showSystemNotification("تطبيق صلاتي", "تم تفعيل إشعارات الأذان بنجاح في منطقتك!");
+                    }
+                });
+            }
+        }
+
+        // إرسال إشعار نظام حقيقي
+        function showSystemNotification(title, bodyText) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification(title, {
+                    body: bodyText,
+                    icon: "https://cdn-icons-png.flaticon.com/512/3067/3067425.png"
+                });
+            }
         }
 
         function checkPrayerTimesEngine() {
@@ -570,6 +584,12 @@
                 titleEl.innerText = `حين الصلاة: ${activePrayerName}`;
                 alertBox.style.display = 'block';
                 noPrayerState.style.display = 'none';
+
+                // إرسال إشعار نظام إذا لم يتم إرساله مسبقاً لهذه الصلاة
+                if (lastNotifiedPrayer !== activePrayerName) {
+                    lastNotifiedPrayer = activePrayerName;
+                    showSystemNotification("حان الآن وقت الصلاة", `حي على الصلاة، حان وقت ${activePrayerName} في ${userCity || 'منطقتك'}`);
+                }
             } else {
                 alertBox.style.display = 'none';
                 noPrayerState.style.display = 'block';
