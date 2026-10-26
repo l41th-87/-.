@@ -183,11 +183,10 @@
             position: relative;
         }
         
-        /* شريط التحكم الداخلي (مخفي بالحالة العادية، وبيظهر فوق الآيات أول ما يتكبر المصحف) */
+        /* شريط التحكم الداخلي (مخفي بالحالة العادية) */
         .fullscreen-top-bar {
             display: none;
         }
-
 
         /* وضع تكبير الشاشة الفعلي بالكامل */
         .quran-box.fullscreen-quran {
@@ -203,8 +202,14 @@
             box-sizing: border-box !important;
             font-size: 30px !important;
         }
+
+        /* جعل نص الآيات عند التكبير يمرر النقرات للأزرار تحته ولا يعيق الضغط */
+        .quran-box.fullscreen-quran #quranTextContent {
+            position: relative;
+            z-index: 1;
+        }
         
-        /* إظهار الشريط بقلب الشاشة المكبرة وثبته بأعلى الشاشة بشكل ممتاز مع أزراره */
+        /* إظهار الشريط بقلب الشاشة المكبرة وثبته بأعلى الشاشة بأولوية قصوى ونقرات مفعلة */
         .quran-box.fullscreen-quran .fullscreen-top-bar {
             display: flex !important;
             position: fixed;
@@ -221,7 +226,6 @@
             border: 2px solid #16a085;
             box-shadow: 0 6px 15px rgba(0,0,0,0.5);
         }
-
 
         .sunnah-grid {
             display: grid;
@@ -275,7 +279,6 @@
 </head>
 <body>
 
-
     <!-- نافذة إدخال الموقع الأولية الإجبارية عند فتح التطبيق لأول مرة -->
     <div id="welcomeModal" style="display: none;">
         <div class="modal-content">
@@ -287,9 +290,7 @@
         </div>
     </div>
 
-
     <header>تطبيق صلاتي والمصحف الشريف</header>
-
 
     <!-- شريط التنقل بين أقسام التطبيق -->
     <div class="nav-bar">
@@ -300,7 +301,6 @@
         <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي</button>
     </div>
 
-
     <div class="container" id="mainContainer">
         
         <!-- لوحة النقاط والموقع -->
@@ -308,10 +308,8 @@
             رصيدك: <span id="scoreValue">100</span> | الموقع: <span id="currentLocDisplay">غير محدد</span>
         </div>
 
-
         <!-- 1. الصفحة الرئيسية -->
         <div id="pageHome" class="page active-page">
-            <!-- صندوق تنبيه الصلاة التلقائي (لا يظهر إلا عند دخول وقت الصلاة حصراً) -->
             <div id="prayerAlertBox" style="display: none; background: #fff5f5; padding: 15px; border-radius: 10px; border: 2px dashed #e74c3c; margin-bottom: 15px;">
                 <h3 id="activePrayerTitle">حين الصلاة</h3>
                 <p style="font-size: 13px; margin-bottom: 8px; font-weight: bold; color: #c0392b;">حين الصلاة: أجب بصراحة، فأنت لا تغش الناس بل تغش الله عز وجل ولا تخادع إلا نفسك:</p>
@@ -320,14 +318,11 @@
                 <button class="btn" style="background-color: #2980b9;" onclick="handlePrayerChoice('excuse')">لم أصلي لعذر شرعي (بدون خصم نقاط)</button>
             </div>
 
-
-            <!-- الحالة الطبيعية في غير أوقات الصلاة (لا توجد لوحة مزعجة) -->
             <div id="noPrayerState" style="text-align: center; padding: 30px 10px; color: #555;">
                 <h3 style="color: #16a085;">الحمد لله على كل حال</h3>
                 <p style="font-size: 14px;">ليس وقت صلاة حالياً. سيظهر لك تنبيه الصلاة تلقائياً وفوراً عند دخول وقت الصلاة بمشيئة الله.</p>
             </div>
         </div>
-
 
         <!-- 2. صفحة الموقع الجغرافي والإشعارات -->
         <div id="pageLocation" class="page">
@@ -343,7 +338,6 @@
             </div>
         </div>
 
-
         <!-- 3. صفحة القرآن الكريم والسُنن والبحث -->
         <div id="pageQuran" class="page">
             <div>
@@ -355,9 +349,7 @@
                     <button class="sunnah-btn" onclick="loadPage(534)">سورة الواقعة</button>
                 </div>
 
-
                 <hr class="section-divider">
-
 
                 <h3>البحث السريع واختيار السور</h3>
                 <input type="text" id="surahSearchInput" placeholder="اكتب اسم السورة للبحث..." oninput="filterSurahsList()">
@@ -366,13 +358,11 @@
                     <option value="">-- اختر السورة مباشرة من القائمة --</option>
                 </select>
 
-
                 <h3 style="margin-top: 15px;">تصفح المصحف الشريف (من 1 إلى 604)</h3>
                 <div style="display: flex; gap: 8px;">
                     <input type="number" id="pageNumberInput" min="1" max="604" value="1" placeholder="رقم الصفحة">
                     <button class="btn" style="width: 120px; margin-top: 5px;" onclick="loadPageByNumberInput()">انتقال للصفحة</button>
                 </div>
-
 
                 <!-- أزرار التحكم بالقراءة وتكبير المصحف -->
                 <div style="display: flex; gap: 5px; margin-top: 10px;">
@@ -380,7 +370,6 @@
                     <button class="btn" style="background-color: #2980b9; font-size: 12px; padding: 6px;" onclick="saveBookmark()">حفظ مكاني</button>
                     <button class="btn" style="background-color: #e67e22; font-size: 12px; padding: 6px;" onclick="goToBookmark()">العودة للمحفوظ</button>
                 </div>
-
 
                 <!-- الشريط العلوي المصحفي الذي يوضح الصفحة والجزء والسورة -->
                 <div class="quran-info-bar" id="quranInfoBar" style="margin-top: 12px;">
@@ -402,7 +391,6 @@
                     <div id="quranTextContent">جاري تحميل الصفحة بالخط العثماني الأصيل...</div>
                 </div>
 
-
                 <!-- أزرار تقليب الصفحات العادية -->
                 <div class="page-controls">
                     <button class="btn" style="background-color: #34495e;" onclick="prevPage()">الصفحة السابقة</button>
@@ -410,7 +398,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- 4. صفحة الأذكار الكاملة -->
         <div id="pageDhikr" class="page">
@@ -423,13 +410,11 @@
                     • أصبحنا وأصبح الملك لله رب العالمين، اللهم إني أسألك خير هذا اليوم فتحه ونصره ونوره وبركته وهداه، وأعوذ بك من شر ما فيه وشر ما بعده.
                 </div>
 
-
                 <div class="dhikr-card">
                     <b>أذكار المساء الكاملة:</b><br>
                     • أمسينا وأمسى الملك لله رب العالمين، اللهم إني أسألك خير هذه الليلة فتحها ونصبرها ونورها وبركتها وهداها، وأعوذ بك من شر ما فيها وشر ما بعدها.<br>
                     • اللّهم بك أمسينا وبك نحيا وبك نموت وإليك المصير.
                 </div>
-
 
                 <div class="dhikr-card">
                     <b>أذكار دبر الصلوات المفروضة:</b><br>
@@ -437,18 +422,15 @@
                     • لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.
                 </div>
 
-
                 <div class="dhikr-card">
                     <b>أذكار النوم والاستيقاظ:</b><br>
                     • باسمك ربي وضعت جنبي وبك أرفعه، إن أمسكت نفسي فارحمتها، وإن أرسلتها فاحفظها بما تحفظ به عبادك الصالحين.<br>
                     • الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور.
                 </div>
 
-
                 <button class="btn" style="background-color: #8e44ad;" onclick="completeDhikr()">أتممت أذكاري اليوم (+5 نقاط)</button>
             </div>
         </div>
-
 
         <!-- 5. صفحة التحدي والمشاركة الجماعية -->
         <div id="pageChallenge" class="page">
@@ -466,16 +448,13 @@
             </div>
         </div>
 
-
     </div>
-
 
     <script>
         let userScore = 100;
         let userCity = "";
         let userCountry = "";
         let currentPageNumber = 1;
-
 
         const localSurahsList = [
             {number: 1, name: "الفاتحة", page: 1}, {number: 2, name: "البقرة", page: 2}, {number: 3, name: "آل عمران", page: 50},
@@ -518,13 +497,11 @@
             {number: 112, name: "الإخلاص", page: 604}, {number: 113, name: "الفلق", page: 604}, {number: 114, name: "الناس", page: 604}
         ];
 
-
         function updateScore(points) {
             userScore += points;
             localStorage.setItem('userScore', userScore);
             document.getElementById('scoreValue').innerText = userScore;
         }
-
 
         function saveInitialLocation() {
             const city = document.getElementById('initCity').value.trim();
@@ -535,7 +512,6 @@
                 return;
             }
 
-
             userCity = city;
             userCountry = country;
             localStorage.setItem('userCity', city);
@@ -543,10 +519,8 @@
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
             document.getElementById('welcomeModal').style.display = 'none';
 
-
             requestRealNotification(city, country);
         }
-
 
         function updateLocation() {
             const city = document.getElementById('updateCity').value.trim();
@@ -556,7 +530,6 @@
                 alert("الرجاء إدخال الحقول بشكل صحيح.");
                 return;
             }
-
 
             userCity = city;
             userCountry = country;
@@ -568,7 +541,6 @@
             alert(`تم تحديث الموقع بنجاح إلى (${city}، ${country}) وتفعيل الإشعارات.`);
         }
 
-
         function requestRealNotification(city, country) {
             if (!("Notification" in window)) return;
             Notification.requestPermission().then(permission => {
@@ -578,34 +550,21 @@
             });
         }
 
-
-        // دالة تفقد وقت الصلاة الحقيقي (محاكاة دقيقة بناءً على الساعات)
         function checkPrayerTimesEngine() {
             let now = new Date();
             let hours = now.getHours();
             let minutes = now.getMinutes();
-            let timeStr = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-
 
             let alertBox = document.getElementById('prayerAlertBox');
             let noPrayerState = document.getElementById('noPrayerState');
             let titleEl = document.getElementById('activePrayerTitle');
 
-
-            // أوقات تجريبية تقريبية يمكن ضبطها أو تركها تفحص حسب الساعة (الفجر، الظهر، العصر، المغرب، العشاء)
-            // لتجربة ظهور اللوحة الفورية، يمكنك تغيير هذه الأوقات أو جعلها تطابق وقتك الحالي
             let activePrayerName = "";
-            
             if (hours === 5 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة الفجر";
             else if (hours === 12 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة الظهر";
             else if (hours === 15 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة العصر";
             else if (hours === 18 && minutes >= 0 && minutes <= 15) activePrayerName = "صلاة المغرب";
             else if (hours === 19 && minutes >= 30 && minutes <= 45) activePrayerName = "صلاة العشاء";
-
-
-            // للتجربة والاستعراض الفوري بدون انتظار الوقت، يمكنك إزالة تعليق السطر أدناه:
-            // activePrayerName = "صلاة الظهر (تجريبي)";
-
 
             if (activePrayerName !== "") {
                 titleEl.innerText = `حين الصلاة: ${activePrayerName}`;
@@ -617,13 +576,11 @@
             }
         }
 
-
         function switchPage(pageName) {
             const pages = ['pageHome', 'pageLocation', 'pageQuran', 'pageDhikr', 'pageChallenge'];
             const tabs = ['tabHome', 'tabLocation', 'tabQuran', 'tabDhikr', 'tabChallenge'];
             pages.forEach(p => document.getElementById(p).classList.remove('active-page'));
             tabs.forEach(t => document.getElementById(t).classList.remove('active'));
-
 
             if (pageName === 'home') {
                 document.getElementById('pageHome').classList.add('active-page');
@@ -643,7 +600,6 @@
             }
         }
 
-
         function populateSurahDropdown(surahs) {
             let select = document.getElementById('surahDropdownSelect');
             if(!select) return;
@@ -656,7 +612,6 @@
             });
         }
 
-
         function filterSurahsList() {
             let query = document.getElementById('surahSearchInput').value.trim().toLowerCase();
             if(!query) {
@@ -667,13 +622,11 @@
             populateSurahDropdown(filtered);
         }
 
-
         function onSurahDropdownChange() {
             let pageNum = document.getElementById('surahDropdownSelect').value;
             if(!pageNum) return;
             loadPage(parseInt(pageNum));
         }
-
 
         function handlePrayerChoice(choice) {
             if(choice === 'prayed') {
@@ -685,17 +638,14 @@
             } else if(choice === 'excuse') {
                 alert("تم قبول عذرك الشرعي.");
             }
-            // إخفاء تنبيه الصلاة بعد الإجابة حتى الصلاة القادمة
             document.getElementById('prayerAlertBox').style.display = 'none';
             document.getElementById('noPrayerState').style.display = 'block';
         }
-
 
         function completeDhikr() {
             alert("تقبل الله طاعتك! تم إتمام أذكارك بنجاح وإضافة 5 نقاط لرصيدك");
             updateScore(5);
         }
-
 
         async function loadPage(pageNum) {
             if(pageNum < 1) pageNum = 1;
@@ -703,25 +653,20 @@
             currentPageNumber = pageNum;
             localStorage.setItem('savedQuranPage', pageNum);
 
-
             document.getElementById('pageNumberInput').value = pageNum;
             document.getElementById('quranTextContent').innerText = "جاري تحميل الصفحة...";
             document.getElementById('quranInfoBar').innerText = "جاري تحميل بيانات الصفحة...";
-
 
             try {
                 let res = await fetch(`https://api.alquran.cloud/v1/page/${pageNum}/quran-uthmani`);
                 let data = await res.json();
                 let ayahs = data.data.ayahs;
 
-
                 let surahsInPage = [...new Set(ayahs.map(a => a.surah.name))].join(' ، ');
                 let currentJuz = ayahs.length > 0 ? ayahs[0].juz : "";
 
-
                 document.getElementById('quranInfoBar').innerHTML = `سورة: <b>${surahsInPage}</b> | الجزء: <b>${currentJuz}</b> | الصفحة: <b>${pageNum}</b>`;
                 document.getElementById('fsBarInfo').innerHTML = `الصفحة: ${pageNum} (جزء ${currentJuz})`;
-
 
                 let htmlText = "";
                 
@@ -735,7 +680,6 @@
                                    .replace(/بسم الله الرحمن الرحيم/g, "").trim();
                     }
 
-
                     if (ayah.numberInSurah === 1 && ayah.surah.number !== 9) {
                         htmlText += `
                             <div class="surah-banner">${ayah.surah.name}</div>
@@ -743,10 +687,8 @@
                         `;
                     }
 
-
                     htmlText += `${text} ۝<span style="font-size: 15px; color: #16a085; margin: 0 4px;">(${ayah.numberInSurah})</span> `;
                 });
-
 
                 document.getElementById('quranTextContent').innerHTML = htmlText;
             } catch (err) {
@@ -754,12 +696,10 @@
             }
         }
 
-
         function loadPageByNumberInput() {
             let num = parseInt(document.getElementById('pageNumberInput').value) || 1;
             loadPage(num);
         }
-
 
         function nextPage() {
             if(currentPageNumber < 604) {
@@ -770,7 +710,6 @@
             }
         }
 
-
         function prevPage() {
             if(currentPageNumber > 1) {
                 loadPage(currentPageNumber - 1);
@@ -779,7 +718,6 @@
                 alert("هذه هي الصفحة الأولى في القرآن الكريم.");
             }
         }
-
 
         function toggleQuranFullscreen() {
             let quranBox = document.getElementById('quranDisplay');
@@ -793,19 +731,16 @@
             }
         }
 
-
         function saveBookmark() {
             localStorage.setItem('userBookmarkPage', currentPageNumber);
             alert("تم حفظ صفحة قراءتك الحالية بنجاح!");
         }
-
 
         function goToBookmark() {
             let bookmark = localStorage.getItem('userBookmarkPage') || 1;
             loadPage(parseInt(bookmark));
             alert("تم إرجاعك إلى صفحتك المحفوظة!");
         }
-
 
         function copyInviteLink() {
             const inviteLink = "https://salati-app.qiivx.com/join?ref=user_" + Math.floor(Math.random() * 10000);
@@ -814,12 +749,10 @@
             });
         }
 
-
         function toggleMode(mode) {
             const groupBtn = document.getElementById('groupBtn');
             const soloBtn = document.getElementById('soloBtn');
             const inviteSection = document.getElementById('inviteSection');
-
 
             if(mode === 'group') {
                 groupBtn.classList.add('active');
@@ -833,20 +766,15 @@
             }
         }
 
-
         window.onload = function() {
             populateSurahDropdown(localSurahsList);
 
-
-            // استرجاع النقاط المحفوظة
             let savedScore = localStorage.getItem('userScore');
             if(savedScore) {
                 userScore = parseInt(savedScore);
                 document.getElementById('scoreValue').innerText = userScore;
             }
 
-
-            // استرجاع الموقع المحفوظ
             let savedCity = localStorage.getItem('userCity');
             let savedCountry = localStorage.getItem('userCountry');
             if(savedCity && savedCountry) {
@@ -858,14 +786,16 @@
                 document.getElementById('welcomeModal').style.display = 'flex';
             }
 
-
-            // استرجاع آخر صفحة قرآن تم قراءتها
             let lastPage = localStorage.getItem('savedQuranPage');
             if(lastPage) {
                 currentPageNumber = parseInt(lastPage);
             }
             loadPage(currentPageNumber);
 
+            checkPrayerTimesEngine();
+            setInterval(checkPrayerTimesEngine, 60000);
+        }
+    </script>
 
-            // فحص أوقات الص
-
+</body>
+</html>
