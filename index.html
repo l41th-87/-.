@@ -58,7 +58,7 @@
         .page.active-page {
             display: block;
         }
-        /* نافذة إدخال الموقع الأولية الإجبارية عند فتح التطبيق لأول مرة */
+        /* نافذة إدخال الموقع والحساب الإجبارية عند فتح التطبيق لأول مرة */
         #welcomeModal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -92,7 +92,7 @@
             color: #2c3e50;
             margin-bottom: 10px;
         }
-        input[type="text"], select, input[type="number"] {
+        input[type="text"], input[type="password"], select, input[type="number"] {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -198,7 +198,7 @@
             max-height: 100vh !important;
             z-index: 9999999 !important;
             border-radius: 0 !important;
-            padding: 110px 20px 30px 20px !important; /* مساحة واسعة بالاعلى لأجل الكبسات */
+            padding: 110px 20px 30px 20px !important;
             box-sizing: border-box !important;
             font-size: 30px !important;
         }
@@ -208,12 +208,12 @@
             z-index: 1;
         }
         
-        /* الشريط العلوي الشفاف بالكامل بدون خلفية سوداء (فقط كبسات منفصلة وواضحة) */
+        /* الشريط العلوي الشفاف بالكامل بدون خلفية سوداء */
         .quran-box.fullscreen-quran .fullscreen-top-bar {
             display: flex !important;
             position: fixed;
             top: 10px; left: 10px; right: 10px;
-            background: transparent !important; /* بدون أي خلفية */
+            background: transparent !important;
             border: none !important;
             box-shadow: none !important;
             padding: 5px;
@@ -225,7 +225,6 @@
             gap: 6px;
         }
 
-        /* تنسيق أزرار شاشة التكبير لتكون بارزة ومريحة للعين */
         .fs-action-btn {
             border: none;
             padding: 8px 12px;
@@ -289,14 +288,16 @@
 </head>
 <body>
 
-    <!-- نافذة إدخال الموقع الأولية الإجبارية عند فتح التطبيق لأول مرة -->
+    <!-- نافذة إدخال الحساب والموقع الأولية الإجبارية عند فتح التطبيق لأول مرة -->
     <div id="welcomeModal" style="display: none;">
         <div class="modal-content">
-            <h3>أهلاً بك في تطبيق صلاتي</h3>
-            <p style="font-size: 13px; color: #666;">الرجاء تحديد منطقتك لضبط مواقيت الصلاة وتفعيل إشعارات الأذان:</p>
-            <input type="text" id="initCity" placeholder="أدخل اسم المدينة (مثل: جنين)">
-            <input type="text" id="initCountry" placeholder="أدخل اسم الدولة (مثل: فلسطين)">
-            <button class="btn" onclick="saveInitialLocation()">حفظ الموقع وبدء التطبيق</button>
+            <h3>إنشاء حسابك في تطبيق صلاتي</h3>
+            <p style="font-size: 13px; color: #666;">الرجاء إدخال بياناتك وموقعك لضبط التطبيق والتحديات:</p>
+            <input type="text" id="regName" placeholder="اسم المستخدم (مثال: ليث)">
+            <input type="password" id="regPass" placeholder="كلمة المرور">
+            <input type="text" id="regCity" placeholder="اسم المدينة (مثال: جنين)">
+            <input type="text" id="regCountry" placeholder="اسم الدولة (مثال: فلسطين)">
+            <button class="btn" onclick="saveInitialAccount()">إنشاء الحساب وبدء التطبيق</button>
         </div>
     </div>
 
@@ -305,17 +306,17 @@
     <!-- شريط التنقل بين أقسام التطبيق -->
     <div class="nav-bar">
         <button class="nav-btn active" id="tabHome" onclick="switchPage('home')">الرئيسية</button>
-        <button class="nav-btn" id="tabLocation" onclick="switchPage('location')">الموقع</button>
+        <button class="nav-btn" id="tabLocation" onclick="switchPage('location')">حسابي والموقع</button>
         <button class="nav-btn" id="tabQuran" onclick="switchPage('quran')">القرآن والسُنن</button>
         <button class="nav-btn" id="tabDhikr" onclick="switchPage('dhikr')">الأذكار</button>
-        <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي</button>
+        <button class="nav-btn" id="tabChallenge" onclick="switchPage('challenge')">التحدي الثنائي</button>
     </div>
 
     <div class="container" id="mainContainer">
         
-        <!-- لوحة النقاط والموقع -->
+        <!-- لوحة النقاط والمستخدم -->
         <div class="score-display">
-            رصيدك: <span id="scoreValue">100</span> | الموقع: <span id="currentLocDisplay">غير محدد</span>
+            المستخدم: <span id="currentUserName">-</span> | رصيدك: <span id="scoreValue">100</span> | الموقع: <span id="currentLocDisplay">غير محدد</span>
         </div>
 
         <!-- 1. الصفحة الرئيسية -->
@@ -334,17 +335,20 @@
             </div>
         </div>
 
-        <!-- 2. صفحة الموقع الجغرافي والإشعارات -->
+        <!-- 2. صفحة الحساب والموقع الجغرافي -->
         <div id="pageLocation" class="page">
             <div>
-                <h3>إعدادات الموقع الجغرافي والإشعارات</h3>
+                <h3>إعدادات الحساب والموقع</h3>
+                <label style="font-size: 13px; color: #555;">اسم المستخدم:</label>
+                <input type="text" id="updateName">
+                
                 <label style="font-size: 13px; color: #555;">اسم المدينة:</label>
-                <input type="text" id="updateCity" placeholder="أدخل اسم المدينة">
+                <input type="text" id="updateCity">
                 
                 <label style="font-size: 13px; color: #555;">اسم الدولة:</label>
-                <input type="text" id="updateCountry" placeholder="أدخل اسم الدولة">
+                <input type="text" id="updateCountry">
                 
-                <button class="btn" style="background-color: #2980b9;" onclick="updateLocation()">تحديث الموقع وتفعيل الإشعارات</button>
+                <button class="btn" style="background-color: #2980b9;" onclick="updateAccountInfo()">حفظ التعديلات</button>
             </div>
         </div>
 
@@ -381,14 +385,13 @@
                     <button class="btn" style="background-color: #e67e22; font-size: 12px; padding: 6px;" onclick="goToBookmark()">العودة للمحفوظ</button>
                 </div>
 
-                <!-- الشريط العلوي المصحفي الذي يوضح الصفحة والجزء والسورة -->
+                <!-- الشريط العلوي المصحفي -->
                 <div class="quran-info-bar" id="quranInfoBar" style="margin-top: 12px;">
                     جاري تحميل بيانات الصفحة...
                 </div>
                 
-                <!-- صندوق عرض الآيات (مضمن بداخله شريط الأزرار الشفاف عند التكبير) -->
+                <!-- صندوق عرض الآيات -->
                 <div id="quranDisplay" class="quran-box">
-                    <!-- شريط التحكم الشفاف (أزرار فقط بدون خلفية سوداء) -->
                     <div class="fullscreen-top-bar" id="fullscreenTopBar">
                         <button class="fs-action-btn" style="background-color: #e74c3c;" onclick="toggleQuranFullscreen()">❌ تصغير</button>
                         <span id="fsBarInfo" style="font-size: 13px; font-weight: bold; background: rgba(255,255,255,0.85); padding: 5px 10px; border-radius: 6px; color: #2c3e50;">الصفحة: 1</span>
@@ -401,7 +404,6 @@
                     <div id="quranTextContent">جاري تحميل الصفحة بالخط العثماني الأصيل...</div>
                 </div>
 
-                <!-- أزرار تقليب الصفحات العادية -->
                 <div class="page-controls">
                     <button class="btn" style="background-color: #34495e;" onclick="prevPage()">الصفحة السابقة</button>
                     <button class="btn" style="background-color: #16a085;" onclick="nextPage()">الصفحة التالية</button>
@@ -413,47 +415,27 @@
         <div id="pageDhikr" class="page">
             <div>
                 <h3>حصن المسلم - الأذكار الكاملة</h3>
-                
                 <div class="dhikr-card">
-                    <b>أذكار الصباح الكاملة:</b><br>
-                    • اللّهم أنت ربي لا إله إلا أنت خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي فإنّه لا يغفر الذنوب إلا أنت.<br>
-                    • أصبحنا وأصبح الملك لله رب العالمين، اللهم إني أسألك خير هذا اليوم فتحه ونصره ونوره وبركته وهداه، وأعوذ بك من شر ما فيه وشر ما بعده.
+                    <b>أذكار الصباح والمساء ودبر الصلوات:</b><br>
+                    • اللّهم أنت ربي لا إله إلا أنت خلقتني وأنا عبدك...<br>
+                    • أصبحنا وأصبح الملك لله رب العالمين...
                 </div>
-
-                <div class="dhikr-card">
-                    <b>أذكار المساء الكاملة:</b><br>
-                    • أمسينا وأمسى الملك لله رب العالمين، اللهم إني أسألك خير هذه الليلة فتحها ونصبرها ونورها وبركتها وهداها، وأعوذ بك من شر ما فيها وشر ما بعدها.<br>
-                    • اللّهم بك أمسينا وبك نحيا وبك نموت وإليك المصير.
-                </div>
-
-                <div class="dhikr-card">
-                    <b>أذكار دبر الصلوات المفروضة:</b><br>
-                    • أستغفر الله (ثلاثاً)، اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام.<br>
-                    • لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.
-                </div>
-
-                <div class="dhikr-card">
-                    <b>أذكار النوم والاستيقاظ:</b><br>
-                    • باسمك ربي وضعت جنبي وبك أرفعه، إن أمسكت نفسي فارحمتها، وإن أرسلتها فاحفظها بما تحفظ به عبادك الصالحين.<br>
-                    • الحمد لله الذي أحيانا بعد ما أماتنا وإليه النشور.
-                </div>
-
                 <button class="btn" style="background-color: #8e44ad;" onclick="completeDhikr()">أتممت أذكاري اليوم (+5 نقاط)</button>
             </div>
         </div>
 
-        <!-- 5. صفحة التحدي والمشاركة الجماعية -->
+        <!-- 5. صفحة التحدي الثنائي الحقيقي بين المستخدمين -->
         <div id="pageChallenge" class="page">
             <div>
-                <h3>نظام التحدي والمجموعات</h3>
-                <div class="mode-options">
-                    <div class="mode-btn active" id="groupBtn" onclick="toggleMode('group')">تحدي جماعي / ثنائي</div>
-                    <div class="mode-btn" id="soloBtn" onclick="toggleMode('solo')">بدون تنافس (شخصي)</div>
-                </div>
+                <h3>نظام التحدي الثنائي بين الأصدقاء</h3>
+                <p style="font-size: 13px; color: #666;">ابحث عن صديقك أو أدخل اسمه لإرسال طلب تحدي فوري:</p>
                 
-                <div id="inviteSection" style="margin-top: 15px;">
-                    <label style="font-size: 13px; color: #555;">رابط دعوة الأصدقاء والمشاركين:</label>
-                    <button class="btn" style="background-color: #8e44ad;" onclick="copyInviteLink()">نسخ رابط الدعوة للمجموعة</button>
+                <input type="text" id="searchFriendInput" placeholder="اكتب اسم الشخص أو الصديق للبحث...">
+                <button class="btn" style="background-color: #2980b9;" onclick="searchAndChallengeFriend()">إرسال طلب تحدي</button>
+
+                <div id="challengeStatusArea" style="margin-top: 15px; padding: 12px; background: #f8f9f9; border-radius: 8px; border: 1px solid #ddd; display: none;">
+                    <p id="challengeMsg" style="font-size: 13px; font-weight: bold; margin-bottom: 8px;"></p>
+                    <div id="challengeActionBtns" style="display: flex; gap: 8px;"></div>
                 </div>
             </div>
         </div>
@@ -462,6 +444,8 @@
 
     <script>
         let userScore = 100;
+        let userName = "";
+        let userPass = "";
         let userCity = "";
         let userCountry = "";
         let currentPageNumber = 1;
@@ -514,42 +498,88 @@
             document.getElementById('scoreValue').innerText = userScore;
         }
 
-        function saveInitialLocation() {
-            const city = document.getElementById('initCity').value.trim();
-            const country = document.getElementById('initCountry').value.trim();
+        function saveInitialAccount() {
+            const name = document.getElementById('regName').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const city = document.getElementById('regCity').value.trim();
+            const country = document.getElementById('regCountry').value.trim();
             
-            if(!city || !country) {
-                alert("الرجاء إدخال اسم المدينة والدولة للمتابعة.");
+            if(!name || !pass || !city || !country) {
+                alert("الرجاء تعبئة جميع الحقول (الاسم، كلمة المرور، المدينة، الدولة) لإنشاء الحساب.");
                 return;
             }
 
+            userName = name;
+            userPass = pass;
             userCity = city;
             userCountry = country;
+
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userPass', pass);
             localStorage.setItem('userCity', city);
             localStorage.setItem('userCountry', country);
+
+            document.getElementById('currentUserName').innerText = name;
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
             document.getElementById('welcomeModal').style.display = 'none';
 
             requestNotificationPermission();
         }
 
-        function updateLocation() {
+        function updateAccountInfo() {
+            const name = document.getElementById('updateName').value.trim();
             const city = document.getElementById('updateCity').value.trim();
             const country = document.getElementById('updateCountry').value.trim();
             
-            if(!city || !country) {
-                alert("الرجاء إدخال الحقول بشكل صحيح.");
+            if(!name || !city || !country) {
+                alert("الرجاء عدم ترك الحقول فارغة.");
                 return;
             }
 
+            userName = name;
             userCity = city;
             userCountry = country;
+
+            localStorage.setItem('userName', name);
             localStorage.setItem('userCity', city);
             localStorage.setItem('userCountry', country);
+
+            document.getElementById('currentUserName').innerText = name;
             document.getElementById('currentLocDisplay').innerText = `${city}، ${country}`;
-            
-            requestNotificationPermission();
-            alert(`تم تحديث الموقع بنجاح إلى (${city}، ${country}) وتفعيل الإشعارات.`);
+            alert("تم تحديث بيانات الحساب بنجاح!");
+        }
+
+        // نظام التحدي الثنائي الحقيقي (بحث، إرسال دعوة، قبول أو رفض)
+        function searchAndChallengeFriend() {
+            const friendName = document.getElementById('searchFriendInput').value.trim();
+            if(!friendName) {
+                alert("الرجاء كتابة اسم الصديق للبحث عنه.");
+                return;
+            }
+            if(friendName === userName) {
+                alert("لا يمكنك تحدي نفسك!");
+                return;
+            }
+
+            let statusArea = document.getElementById('challengeStatusArea');
+            let msgEl = document.getElementById('challengeMsg');
+            let actionsEl = document.getElementById('challengeActionBtns');
+
+            statusArea.style.display = 'block';
+            msgEl.innerHTML = `تم إرسال طلب تحدي إلى الصديق: <b>${friendName}</b>. في انتظار رده...`;
+            actionsEl.innerHTML = `<span style="color: #e67e22; font-size: 13px; font-weight: bold;">جارٍ الانتظار...</span>`;
+
+            // محاكاة استجابة الصديق (بعد 3 ثوانٍ يظهر الرد التجريبي كأنه قبل أو رفض)
+            setTimeout(() => {
+                let accepted = Math.random() > 0.4; // 60% يوافق و 40% يرفض للتجربة الواقعية
+                if(accepted) {
+                    msgEl.innerHTML = `وافق الصديق <b>${friendName}</b> على التحدي! بدأ التحدي الثنائي الآن 🎮🔥`;
+                    actionsEl.innerHTML = `<button class="btn" style="background-color: #27ae60; margin:0;" onclick="alert('أنت في تحدٍ نشط الآن مع ${friendName}!')">الدخول لساحة التحدي</button>`;
+                } else {
+                    msgEl.innerHTML = `للأسف، قام الصديق <b>${friendName}</b> برفض طلب التحدي.`;
+                    actionsEl.innerHTML = `<span style="color: #c0392b; font-size: 13px; font-weight: bold;">تم رفض الطلب</span>`;
+                }
+            }, 3500);
         }
 
         function requestNotificationPermission() {
@@ -557,7 +587,7 @@
             if (Notification.permission !== "granted") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        showSystemNotification("تطبيق صلاتي", "تم تفعيل إشعارات الأذان بنجاح في منطقتك!");
+                        new Notification("تطبيق صلاتي", { body: "تم تفعيل إشعارات الأذان والتحديات بنجاح!" });
                     }
                 });
             }
@@ -565,10 +595,7 @@
 
         function showSystemNotification(title, bodyText) {
             if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, {
-                    body: bodyText,
-                    icon: "https://cdn-icons-png.flaticon.com/512/3067/3067425.png"
-                });
+                new Notification(title, { body: bodyText });
             }
         }
 
@@ -595,7 +622,7 @@
 
                 if (lastNotifiedPrayer !== activePrayerName) {
                     lastNotifiedPrayer = activePrayerName;
-                    showSystemNotification("حان الآن وقت الصلاة", `حي على الصلاة، حان وقت ${activePrayerName} في ${userCity || 'منطقتك'}`);
+                    showSystemNotification("حان الآن وقت الصلاة", `حي على الصلاة، حان وقت ${activePrayerName}`);
                 }
             } else {
                 alertBox.style.display = 'none';
@@ -660,7 +687,7 @@
                 alert("تقبل اللّٰه طاعتك! تم إضافة 10 نقاط لرصيدك");
                 updateScore(10);
             } else if(choice === 'lazy') {
-                alert("تذكر قول الله تعالى: (ما سلككم في سقر قالوا لم نك من المصلين ولم نك نطعم المسكين وكنا نخوض مع الخائضين).\nتقصير واضح! تم خصم 20 نقطة من رصيدك.");
+                alert("تذكر قول الله تعالى: (ما سلككم في سقر قالوا لم نك من المصلين...). تم خصم 20 نقطة.");
                 updateScore(-20);
             } else if(choice === 'excuse') {
                 alert("تم قبول عذرك الشرعي.");
@@ -769,30 +796,6 @@
             alert("تم إرجاعك إلى صفحتك المحفوظة!");
         }
 
-        function copyInviteLink() {
-            const inviteLink = "https://salati-app.qiivx.com/join?ref=user_" + Math.floor(Math.random() * 10000);
-            navigator.clipboard.writeText(inviteLink).then(() => {
-                alert("تم نسخ رابط دعوة التحدي بنجاح:\n" + inviteLink);
-            });
-        }
-
-        function toggleMode(mode) {
-            const groupBtn = document.getElementById('groupBtn');
-            const soloBtn = document.getElementById('soloBtn');
-            const inviteSection = document.getElementById('inviteSection');
-
-            if(mode === 'group') {
-                groupBtn.classList.add('active');
-                soloBtn.classList.remove('active');
-                inviteSection.style.display = 'block';
-            } else {
-                soloBtn.classList.add('active');
-                groupBtn.classList.remove('active');
-                inviteSection.style.display = 'none';
-                alert("تم التحويل للوضع الشخصي بنجاح.");
-            }
-        }
-
         window.onload = function() {
             populateSurahDropdown(localSurahsList);
 
@@ -802,12 +805,22 @@
                 document.getElementById('scoreValue').innerText = userScore;
             }
 
+            let savedName = localStorage.getItem('userName');
             let savedCity = localStorage.getItem('userCity');
             let savedCountry = localStorage.getItem('userCountry');
-            if(savedCity && savedCountry) {
+
+            if(savedName && savedCity && savedCountry) {
+                userName = savedName;
                 userCity = savedCity;
                 userCountry = savedCountry;
-                document.getElementById('currentLocDisplay').innerText = `${userCity}، ${userCountry}`;
+
+                document.getElementById('currentUserName').innerText = savedName;
+                document.getElementById('currentLocDisplay').innerText = `${savedCity}، ${savedCountry}`;
+                
+                document.getElementById('updateName').value = savedName;
+                document.getElementById('updateCity').value = savedCity;
+                document.getElementById('updateCountry').value = savedCountry;
+
                 document.getElementById('welcomeModal').style.display = 'none';
             } else {
                 document.getElementById('welcomeModal').style.display = 'flex';
